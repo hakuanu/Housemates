@@ -16,4 +16,10 @@
         completions."
     </string>
     <string name="title_activity_create_account">Create Account</string>
+    <string name="title_activity_main">Housemates</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>
