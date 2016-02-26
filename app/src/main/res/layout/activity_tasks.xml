@@ -1,35 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< HEAD
     tools:context=".TasksActivity"
     android:fitsSystemWindows="true">
+=======
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
+>>>>>>> master
 
-<ListView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/listedItems"
-    android:layout_alignParentTop="true"
-    android:layout_alignParentLeft="true"
-    android:layout_alignParentStart="true"
-    android:layout_above="@+id/addButton" />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        tools:context=".TasksActivity"
+        tools:openDrawer="start">
 
-<EditText
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/newItem"
-    android:layout_alignTop="@+id/addButton"
-    android:hint="Enter a new item"
-    android:layout_alignParentLeft="true"
-    android:layout_alignParentStart="true"
-    android:layout_toLeftOf="@+id/addButton"
-    android:layout_toStartOf="@+id/addButton"
-    android:layout_alignParentBottom="true" />
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/listedItems"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_above="@+id/addButton" />
 
-<Button
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/newItem"
+            android:layout_alignTop="@+id/addButton"
+            android:hint="Enter a new item"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/addButton"
+            android:layout_toStartOf="@+id/addButton"
+            android:layout_alignParentBottom="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Item"
+            android:id="@+id/addButton"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:onClick="onAddItem" />
+
+        <include
+            layout="@layout/app_bar_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+
+<android.support.design.widget.NavigationView
+    android:id="@+id/nav_view"
     android:layout_width="wrap_content"
+<<<<<<< HEAD
     android:layout_height="wrap_content"
     android:text="Add Item"
     android:id="@+id/addButton"
@@ -39,4 +72,13 @@
     android:onClick="onAddItem" />
 
 </RelativeLayout>
+=======
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:fitsSystemWindows="true"
+    app:headerLayout="@layout/nav_header_main"
+    app:menu="@menu/activity_main_drawer" />
+
+</android.support.v4.widget.DrawerLayout>
+>>>>>>> master
 
