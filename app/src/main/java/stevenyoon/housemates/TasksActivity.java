@@ -16,13 +16,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-
+import android.support.v7.widget.Toolbar;
 import java.util.ArrayList;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 
 /**
  * Created by austinha on 2/23/16.
  */
-public class TasksActivity extends Activity {
+public class TasksActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
     private ArrayList<String> items;
     private ArrayAdapter<String> itemsAdapter;
     private ListView listItems;
@@ -38,6 +41,8 @@ public class TasksActivity extends Activity {
                 android.R.layout.simple_list_item_1, items);
         listItems.setAdapter(itemsAdapter);
         setupListViewListener();
+
+
     }
 
     public void onAddItem(View v) {
@@ -62,5 +67,37 @@ public class TasksActivity extends Activity {
                     }
 
                 });
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_calendar) {
+            // Handle the camera action
+        }
+        else if (id == R.id.nav_tasks) {
+            Intent i = new Intent(TasksActivity.this, TasksActivity.class);
+            startActivity(i);
+        }
+        else if (id == R.id.nav_payment) {
+
+        }
+        else if (id == R.id.nav_settings) {
+            Intent i = new Intent(TasksActivity.this, SettingsActivity.class);
+            startActivity(i);
+        }
+        else if (id == R.id.nav_share) {
+
+        }
+        else if (id == R.id.nav_messaging) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
