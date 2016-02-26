@@ -29,8 +29,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -67,6 +71,7 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
         // Set up the login form.
+        Firebase.setAndroidContext(this);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
@@ -185,8 +190,21 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+            Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+            ref.createUser(email, password, new Firebase.ValueResultHandler<Map<String, Object>>() {
+                @Override
+                public void onSuccess(Map<String, Object> result) {
+                    System.out.println("Successfully created user account with uid: " + result.get("uid"));
+                }
+                @Override
+                public void onError(FirebaseError firebaseError) {
+                    // there was an error
+                    System.out.println("Error adding user");
+                }
+            });
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
+
         }
     }
 
