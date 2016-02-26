@@ -186,6 +186,4 @@ public class TasksActivity extends AppCompatActivity
         return true;
     }
 }
-=======
-}
->>>>>>> master
+
