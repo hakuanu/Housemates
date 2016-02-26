@@ -28,12 +28,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
  */
 public class TasksActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-=======
-public class TasksActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
 
 
->>>>>>> master
     private ArrayList<String> items;
     private ArrayAdapter<String> itemsAdapter;
     private ListView listItems;
@@ -97,37 +93,7 @@ public class TasksActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
 
-        if (id == R.id.nav_calendar) {
-            // Handle the camera action
-        }
-        else if (id == R.id.nav_tasks) {
-            Intent i = new Intent(TasksActivity.this, TasksActivity.class);
-            startActivity(i);
-        }
-        else if (id == R.id.nav_payment) {
-
-        }
-        else if (id == R.id.nav_sattings) {
-            Intent i = new Intent(TasksActivity.this, SettingsActivity.class);
-            startActivity(i);
-        }
-        else if (id == R.id.nav_share) {
-
-        }
-        else if (id == R.id.nav_messaging) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
     public void onAddItem(View v) {
         EditText newItem = (EditText) findViewById(R.id.newItem);
@@ -152,7 +118,7 @@ public class TasksActivity extends AppCompatActivity
 
                 });
     }
-<<<<<<< HEAD
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

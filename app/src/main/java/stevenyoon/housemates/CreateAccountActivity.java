@@ -3,6 +3,7 @@ package stevenyoon.housemates;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -27,10 +28,16 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.firebase.client.AuthData;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -67,6 +74,7 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
         // Set up the login form.
+        Firebase.setAndroidContext(this);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
@@ -153,8 +161,8 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        final String email = mEmailView.getText().toString();
+        final String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -185,8 +193,31 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+            final Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+            ref.createUser(email, password, new Firebase.ValueResultHandler<Map<String, Object>>() {
+                @Override
+                public void onSuccess(Map<String, Object> result) {
+                    System.out.println("Successfully created user account with uid: " + result.get("uid"));
+                    ref.authWithPassword(email, password, new Firebase.AuthResultHandler() {
+                        @Override
+                        public void onAuthenticated(AuthData authData) {
+                            loginSuccess(authData.getUid());
+                        }
+                        @Override
+                        public void onAuthenticationError(FirebaseError firebaseError) {
+                            // there was an error
+                        }
+                    });
+                }
+                @Override
+                public void onError(FirebaseError firebaseError) {
+                    // there was an error
+                    System.out.println("Error adding user");
+                }
+            });
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
+
         }
     }
 
@@ -199,7 +230,11 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
-
+    private void loginSuccess(String uid){
+        Intent i = new Intent(this, MainActivity.class);
+        i.putExtra("UID", uid);
+        startActivity(i);
+    }
     /**
      * Shows the progress UI and hides the login form.
      */
