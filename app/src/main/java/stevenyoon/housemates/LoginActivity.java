@@ -30,7 +30,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -202,9 +204,31 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            //mAuthTask = new UserLoginTask(email, password);
+          //  mAuthTask.execute((Void) null);
+            Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+            ref.authWithPassword(email, password, new Firebase.AuthResultHandler() {
+                @Override
+                public void onAuthenticated(AuthData authData) {
+                    loginSuccess(authData.getUid());
+                }
+                @Override
+                public void onAuthenticationError(FirebaseError firebaseError) {
+                    showProgress(false);
+                    if(firebaseError.getCode() == FirebaseError.INVALID_PASSWORD) {
+                        mPasswordView.setError(getString(R.string.error_invalid_password));
+                       // focusView = mPasswordView;
+                    } else if (firebaseError.getCode() == FirebaseError.INVALID_CREDENTIALS) {
+                        mEmailView.setError(getString(R.string.error_invalid_email));
+                    }
+                }
+            });
         }
+    }
+    private void loginSuccess(String uid){
+        Intent i = new Intent(this, MainActivity.class);
+        i.putExtra("UID", uid);
+        startActivity(i);
     }
 
     private boolean isEmailValid(String email) {
