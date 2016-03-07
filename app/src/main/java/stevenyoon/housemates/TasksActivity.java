@@ -1,9 +1,14 @@
 package stevenyoon.housemates;
 
+
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,26 +18,31 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 public class TasksActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-
-    private ArrayList<String> items;
+    private ArrayList<ArrayList<String>> items;
     private ArrayAdapter<String> itemsAdapter;
     private ListView listItems;
+    private int currentList;
+    private ViewPager taskPager;
+    private SlidingTabLayout taskTabs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tasks);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -45,12 +55,17 @@ public class TasksActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         listItems = (ListView) findViewById(R.id.listedItems);
-        items = new ArrayList<String>();
-        itemsAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, items);
-        itemsAdapter.add("");
-        listItems.setAdapter(itemsAdapter);
-        setupListViewListener();
+        items = new ArrayList<ArrayList<String>>();
+        //itemsAdapter = new ArrayAdapter<String>(this,
+        //        android.R.layout.simple_list_item_1, items);
+        //itemsAdapter.add("");
+        //listItems.setAdapter(itemsAdapter);
+        //setupListViewListener();
+
+        taskPager = (ViewPager) findViewById(R.id.settings_pager);
+        taskTabs = (SlidingTabLayout) findViewById(R.id.settings_tab);
+        taskTabs.setViewPager(taskPager);
+        taskTabs.setViewPager();
     }
 
     @Override
@@ -66,20 +81,18 @@ public class TasksActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.tasks_activity2, menu);
+        getMenuInflater().inflate(R.menu.tasks_menu, menu);
+        getSupportActionBar().setTitle("Tasks");
         return true;
     }
 
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id) {
+            case R.id.action_add:
+
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -139,5 +152,45 @@ public class TasksActivity extends AppCompatActivity
                     }
 
                 });
+    }
+
+    class MyPagerAdapter extends FragmentPagerAdapter {
+
+        public MyPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public int getCount() {
+            return 0;
+        }
+    }
+
+    public static class MyFragment extends Fragment {
+
+        private TextView textView;
+
+        public static MyFragment getInstance(int position) {
+            MyFragment myFragment = new MyFragment();
+            Bundle args=new Bundle();
+            args.putInt("position".position);
+            myFragment.setArguments(args);
+            return myFragment;
+        }
+
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            View layout = inflater.inflate(R.layout.task_fragment, container, false);
+            textView = (TextView) layout.findViewById(R.id.position);
+            Bundle bundle = getArguments();
+            if(bundle != null) {
+                textView.setText(bundle.getInt("position"));
+            }
+            return layout;
+        }
     }
 }
