@@ -63,9 +63,9 @@ public class TasksActivity extends AppCompatActivity
         //setupListViewListener();
 
         taskPager = (ViewPager) findViewById(R.id.settings_pager);
+        taskPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
         taskTabs = (SlidingTabLayout) findViewById(R.id.settings_tab);
         taskTabs.setViewPager(taskPager);
-        taskTabs.setViewPager();
     }
 
     @Override
@@ -156,18 +156,26 @@ public class TasksActivity extends AppCompatActivity
 
     class MyPagerAdapter extends FragmentPagerAdapter {
 
-        public MyPagerAdapter(FragmentManager fm) {
+        String[] tabs;
+
+        public MyPagerAdapter(android.support.v4.app.FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            return null;
+            MyFragment myFragment = MyFragment.getInstance(position);
+            return myFragment;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return tabs[position];
         }
 
         @Override
         public int getCount() {
-            return 0;
+            return tabs.length;
         }
     }
 
@@ -177,15 +185,15 @@ public class TasksActivity extends AppCompatActivity
 
         public static MyFragment getInstance(int position) {
             MyFragment myFragment = new MyFragment();
-            Bundle args=new Bundle();
-            args.putInt("position".position);
+            Bundle args = new Bundle();
+            args.putInt("position", position);
             myFragment.setArguments(args);
             return myFragment;
         }
 
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View layout = inflater.inflate(R.layout.task_fragment, container, false);
-            textView = (TextView) layout.findViewById(R.id.position);
+            textView = (TextView) layout.findViewById(R.id.textView);
             Bundle bundle = getArguments();
             if(bundle != null) {
                 textView.setText(bundle.getInt("position"));
