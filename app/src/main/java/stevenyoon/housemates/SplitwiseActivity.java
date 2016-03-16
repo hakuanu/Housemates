@@ -52,7 +52,7 @@ public class SplitwiseActivity extends AppCompatActivity {
     private static final String STATE = "AAAAA";
     //This is the url that LinkedIn Auth process will redirect to. We can put whatever we want that starts with http:// or https:// .
 //We use a made up url that we will intercept when redirecting. Avoid Uppercases.
-    private static final String REDIRECT_URI = "http://localhost";
+    private static final String REDIRECT_URI = "Housemates://onPostExecute";
     /*********************************************/
 
 //These are constants used for build the urls
@@ -77,10 +77,10 @@ public class SplitwiseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_splitwise);
 
         //get the webView from the layout
-        webView = (WebView) findViewById(R.id.splitwise_activity_web_view);
+        webView = (WebView)findViewById(R.id.splitwise_activity_web_view    );
 
         //Request focus for the webview
         webView.requestFocus(View.FOCUS_DOWN);

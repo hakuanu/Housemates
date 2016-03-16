@@ -25,6 +25,7 @@
     <string name="prompt_group">Group ID</string>
     <string name="action_change_group">Change</string>
     <string name="title_activity_tasks">TasksActivity</string>
+    <string name="title_activity_payment">Payment</string>
 
     <string name="username_label">Username:</string>
     <string name="nickname_label">Nickname:</string>
