@@ -51,13 +51,7 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
+
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -66,6 +60,7 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mPasswordConfirmView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -76,10 +71,11 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
         // Set up the login form.
         Firebase.setAndroidContext(this);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
+       // populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mPasswordConfirmView = (EditText) findViewById(R.id.password_confirm);
+      /*  mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
@@ -88,7 +84,7 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
                 }
                 return false;
             }
-        });
+        });*/
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_register_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -102,36 +98,6 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
         mProgressView = findViewById(R.id.login_progress);
     }
 
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
-
     /**
      * Callback received when a permissions request has been completed.
      */
@@ -140,7 +106,7 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
                                            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_READ_CONTACTS) {
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
+                //populateAutoComplete();
             }
         }
     }
@@ -159,10 +125,11 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
-
+        mPasswordConfirmView.setError(null);
         // Store values at the time of the login attempt.
         final String email = mEmailView.getText().toString();
         final String password = mPasswordView.getText().toString();
+        final String password_confirm = mPasswordConfirmView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -173,7 +140,11 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
             focusView = mPasswordView;
             cancel = true;
         }
-
+        if (!TextUtils.isEmpty(password) && !password.equals(password_confirm)) {
+            mPasswordView.setError(getString(R.string.error_mismatched_password));
+            focusView = mPasswordView;
+            cancel = true;
+        }
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
@@ -350,13 +321,6 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
                 return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
 
             // TODO: register the new account here.
             return true;
