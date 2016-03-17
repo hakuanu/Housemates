@@ -50,9 +50,9 @@ public class SplitwiseActivity extends AppCompatActivity {
     private static final String SECRET_KEY = "YXJ8XpBVimRlDq90dLD5w7RpKXKZLqPxzGJl6Mr8";
     //This is any string we want to use. This will be used for avoid CSRF attacks. You can generate one here: http://strongpasswordgenerator.com/
     private static final String STATE = "AAAAA";
-    //This is the url that LinkedIn Auth process will redirect to. We can put whatever we want that starts with http:// or https:// .
+    //This is the url that Auth process will redirect to. We can put whatever we want that starts with http:// or https:// .
 //We use a made up url that we will intercept when redirecting. Avoid Uppercases.
-    private static final String REDIRECT_URI = "Housemates://onPostExecute";
+    private static final String REDIRECT_URI = "";
     /*********************************************/
 
 //These are constants used for build the urls
@@ -80,7 +80,7 @@ public class SplitwiseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splitwise);
 
         //get the webView from the layout
-        webView = (WebView)findViewById(R.id.splitwise_activity_web_view    );
+        webView = (WebView)findViewById(R.id.splitwise_activity_web_view);
 
         //Request focus for the webview
         webView.requestFocus(View.FOCUS_DOWN);
@@ -89,46 +89,47 @@ public class SplitwiseActivity extends AppCompatActivity {
         pd = ProgressDialog.show(this, "", "loading",true);
 
         //Set a custom web view client
-        webView.setWebViewClient(new WebViewClient(){
+        webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 //This method will be executed each time a page finished loading.
                 //The only we do is dismiss the progressDialog, in case we are showing any.
-                if(pd!=null && pd.isShowing()){
+                if (pd != null && pd.isShowing()) {
                     pd.dismiss();
                 }
             }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String authorizationUrl) {
                 //This method will be called when the Auth proccess redirect to our RedirectUri.
                 //We will check the url looking for our RedirectUri.
-                if(authorizationUrl.startsWith(REDIRECT_URI)){
+                if (authorizationUrl.startsWith(REDIRECT_URI)) {
                     Log.i("Authorize", "");
                     Uri uri = Uri.parse(authorizationUrl);
                     //We take from the url the authorizationToken and the state token. We have to check that the state token returned by the Service is the same we sent.
                     //If not, that means the request may be a result of CSRF and must be rejected.
                     String stateToken = uri.getQueryParameter(STATE_PARAM);
-                    if(stateToken==null || !stateToken.equals(STATE)){
+                    if (stateToken == null || !stateToken.equals(STATE)) {
                         Log.e("Authorize", "State token doesn't match");
                         return true;
                     }
 
                     //If the user doesn't allow authorization to our application, the authorizationToken Will be null.
                     String authorizationToken = uri.getQueryParameter(RESPONSE_TYPE_VALUE);
-                    if(authorizationToken==null){
+                    if (authorizationToken == null) {
                         Log.i("Authorize", "The user doesn't allow authorization.");
                         return true;
                     }
-                    Log.i("Authorize", "Auth token received: "+authorizationToken);
+                    Log.i("Authorize", "Auth token received: " + authorizationToken);
 
                     //Generate URL for requesting Access Token
                     String accessTokenUrl = getAccessTokenUrl(authorizationToken);
                     //We make the request in a AsyncTask
                     new PostRequestAsyncTask().execute(accessTokenUrl);
 
-                }else{
+                } else {
                     //Default behaviour
-                    Log.i("Authorize","Redirecting to: "+authorizationUrl);
+                    Log.i("Authorize", "Redirecting to: " + authorizationUrl);
                     webView.loadUrl(authorizationUrl);
                 }
                 return true;
@@ -137,9 +138,10 @@ public class SplitwiseActivity extends AppCompatActivity {
 
         //Get the authorization Url
         String authUrl = getAuthorizationUrl();
-        Log.i("Authorize","Loading Auth Url: "+authUrl);
+        Log.i("Authorize", "Loading Auth Url: " + authUrl);
         //Load the authorization URL into the webView
         webView.loadUrl(authUrl);
+
     }
 
     /**
@@ -192,6 +194,7 @@ public class SplitwiseActivity extends AppCompatActivity {
                 HttpClient httpClient = new DefaultHttpClient();
                 HttpPost httpost = new HttpPost(url);
                 try{
+                    Log.v("Debugging", "Got Here");
                     org.apache.http.HttpResponse response = httpClient.execute(httpost);
                     if(response!=null){
                         //If status is OK 200
@@ -242,6 +245,11 @@ public class SplitwiseActivity extends AppCompatActivity {
             }
             if(status){
                 //If everything went Ok, change to another activity.
+                Intent startProfileActivity = new Intent(SplitwiseActivity.this, MainActivity.class);
+                SplitwiseActivity.this.startActivity(startProfileActivity);
+            }
+            else{
+                Log.v("Debugging", "request was null");
                 Intent startProfileActivity = new Intent(SplitwiseActivity.this, MainActivity.class);
                 SplitwiseActivity.this.startActivity(startProfileActivity);
             }
