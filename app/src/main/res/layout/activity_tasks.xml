@@ -6,36 +6,16 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_alignParentTop="true"
+    android:layout_above="@+id/listedItems"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:context=".TasksActivity">
-
-        <include
-            android:id="@+id/app_bar"
-            layout="@layout/app_bar_tasks" />
-
-        <stevenyoon.housemates.SlidingTabLayout
-            android:id="@+id/settings_tab"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <android.support.v4.view.ViewPager
-            android:id="@+id/settings_pager"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/drawer_layout"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context=".TasksActivity"
         tools:openDrawer="start">
@@ -69,7 +49,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:onClick="onAddItem" />
+            android:onClick="addTask" />
 
         <include
             layout="@layout/app_bar_main"
@@ -77,14 +57,13 @@
             android:layout_height="match_parent" />
     </RelativeLayout>
 
-<android.support.design.widget.NavigationView
-    android:id="@+id/nav_view"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:layout_gravity="start"
-    android:fitsSystemWindows="true"
-    app:headerLayout="@layout/nav_header_main"
-    app:menu="@menu/activity_main_drawer" />
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer" />
 
 </android.support.v4.widget.DrawerLayout>
-
