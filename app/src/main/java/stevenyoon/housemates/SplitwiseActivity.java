@@ -195,6 +195,7 @@ public class SplitwiseActivity extends AppCompatActivity {
                 HttpPost httpost = new HttpPost(url);
                 try{
                     Log.v("Debugging", "Got Here");
+                    //FIX THIS (check what the response is, what to parse, etc)
                     org.apache.http.HttpResponse response = httpClient.execute(httpost);
                     if(response!=null){
                         //If status is OK 200
