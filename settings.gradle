@@ -1,1 +1,1 @@
-include ':app', ':library', 'oauth-flow'
+include ':app'
