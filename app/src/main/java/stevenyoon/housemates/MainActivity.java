@@ -82,7 +82,8 @@ public class MainActivity extends AppCompatActivity
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
-
+            Intent i = new Intent(MainActivity.this, SplitwiseActivity.class);
+            startActivity(i);
         }
         else if (id == R.id.nav_settings) {
             Intent i = new Intent(MainActivity.this, SettingsActivity.class);
