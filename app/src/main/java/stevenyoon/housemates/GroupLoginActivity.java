@@ -20,9 +20,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -140,8 +141,8 @@ public class GroupLoginActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String group = mGroupView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        final String group = mGroupView.getText().toString();
+        final String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -149,10 +150,6 @@ public class GroupLoginActivity extends AppCompatActivity {
         // Check for a valid group address.
         if (TextUtils.isEmpty(group)) {
             mGroupView.setError(getString(R.string.error_field_required));
-            focusView = mGroupView;
-            cancel = true;
-        } else if (!isGroupValid(group)) {
-            mGroupView.setError(getString(R.string.error_invalid_group));
             focusView = mGroupView;
             cancel = true;
         }
@@ -167,39 +164,35 @@ public class GroupLoginActivity extends AppCompatActivity {
             showProgress(true);
             //mAuthTask = new UserLoginTask(group, password);
             //  mAuthTask.execute((Void) null);
-            Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-            ref.authWithPassword(group, password, new Firebase.AuthResultHandler() {
+            final Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+            ref.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onAuthenticated(AuthData authData) {
-                    loginSuccess(authData.getUid());
-                }
-                @Override
-                public void onAuthenticationError(FirebaseError firebaseError) {
-                    showProgress(false);
-                    if(firebaseError.getCode() == FirebaseError.INVALID_PASSWORD) {
-                        mPasswordView.setError(getString(R.string.error_invalid_password));
-                        // focusView = mPasswordView;
-                    } else if (firebaseError.getCode() == FirebaseError.INVALID_CREDENTIALS) {
-                        mGroupView.setError(getString(R.string.error_invalid_group));
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot.child("groups").hasChild(group)) {
+                        if (snapshot.child("groups").child(group).child("password").getValue().equals(password)) {
+                            loginSuccess(group);
+                            System.out.println("success!!!!");
+                        } else {
+                            showProgress(false);
+                            mPasswordView.setError(getString(R.string.error_incorrect_password));
+                        }
+                    } else {
+                        showProgress(false);
+                        mGroupView.setError(getString(R.string.error_no_group));
                     }
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    System.out.println("The read failed: " + firebaseError.getMessage());
                 }
             });
         }
     }
-    private void loginSuccess(String uid){
+    private void loginSuccess(String groupName){
         Intent i = new Intent(this, MainActivity.class);
-        i.putExtra("UID", uid);
+        i.putExtra("group", groupName);
         startActivity(i);
-    }
-
-    private boolean isGroupValid(String group) {
-        //TODO: Replace this with your own logic
-        return group.contains("");
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() >= 0;
     }
 
     /**

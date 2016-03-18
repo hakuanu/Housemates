@@ -209,10 +209,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 public void onAuthenticationError(FirebaseError firebaseError) {
                     showProgress(false);
                     if(firebaseError.getCode() == FirebaseError.INVALID_PASSWORD) {
-                        mPasswordView.setError(getString(R.string.error_invalid_password));
-                       // focusView = mPasswordView;
-                    } else if (firebaseError.getCode() == FirebaseError.INVALID_CREDENTIALS) {
-                        mEmailView.setError(getString(R.string.error_invalid_email));
+                        mPasswordView.setError(getString(R.string.error_incorrect_password));
+                    } else if (firebaseError.getCode() == FirebaseError.USER_DOES_NOT_EXIST) {
+                        mEmailView.setError(getString(R.string.error_no_email));
                     } else{
                         System.out.println(firebaseError.getMessage());
                     }
