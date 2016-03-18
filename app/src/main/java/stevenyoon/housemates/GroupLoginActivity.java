@@ -53,12 +53,14 @@ public class GroupLoginActivity extends AppCompatActivity {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_login);
         // Set up the login form.
+        uid = getIntent().getStringExtra("UID");
         mGroupView = (AutoCompleteTextView) findViewById(R.id.group);
         Firebase.setAndroidContext(this);
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -94,8 +96,8 @@ public class GroupLoginActivity extends AppCompatActivity {
         mProgressView = findViewById(R.id.login_progress);
     }
     public void registerButtonClicked(){
-        Intent i = new Intent(this, CreateAccountActivity.class);
-        //i.putExtra()
+        Intent i = new Intent(this, CreateGroupActivity.class);
+        i.putExtra("UID", uid);
         startActivity(i);
     }
 

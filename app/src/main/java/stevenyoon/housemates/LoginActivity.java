@@ -213,6 +213,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                        // focusView = mPasswordView;
                     } else if (firebaseError.getCode() == FirebaseError.INVALID_CREDENTIALS) {
                         mEmailView.setError(getString(R.string.error_invalid_email));
+                    } else{
+                        System.out.println(firebaseError.getMessage());
                     }
                 }
             });
