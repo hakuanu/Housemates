@@ -177,6 +177,8 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
                     if(firebaseError.getCode() == FirebaseError.EMAIL_TAKEN) {
                         mEmailView.setError(getString(R.string.error_email_taken));
                       //  focusView = mEmailView;
+                    } else{
+                        System.out.println(firebaseError.getMessage());
                     }
 
                 }

@@ -31,8 +31,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -203,23 +205,51 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             ref.authWithPassword(email, password, new Firebase.AuthResultHandler() {
                 @Override
                 public void onAuthenticated(AuthData authData) {
+
                     loginSuccess(authData.getUid());
                 }
                 @Override
                 public void onAuthenticationError(FirebaseError firebaseError) {
                     showProgress(false);
                     if(firebaseError.getCode() == FirebaseError.INVALID_PASSWORD) {
-                        mPasswordView.setError(getString(R.string.error_invalid_password));
-                       // focusView = mPasswordView;
-                    } else if (firebaseError.getCode() == FirebaseError.INVALID_CREDENTIALS) {
-                        mEmailView.setError(getString(R.string.error_invalid_email));
+                        mPasswordView.setError(getString(R.string.error_incorrect_password));
+                    } else if (firebaseError.getCode() == FirebaseError.USER_DOES_NOT_EXIST) {
+                        mEmailView.setError(getString(R.string.error_no_email));
+                    } else{
+                        System.out.println(firebaseError.getMessage());
                     }
                 }
             });
         }
     }
     private void loginSuccess(String uid){
+        final String uid2 = uid;
+        Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.child("users").child(uid2).hasChild("group")) {
+                    String groupName =(String) snapshot.child("users").child(uid2).child("group").getValue();
+                    mainIntent(groupName);
+                } else {
+                    groupIntent(uid2);
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+
+    }
+    private void mainIntent(String groupName){
         Intent i = new Intent(this, MainActivity.class);
+        i.putExtra("group", groupName);
+        startActivity(i);
+    }
+    private void groupIntent(String uid){
+        Intent i = new Intent(this, GroupLoginActivity.class);
         i.putExtra("UID", uid);
         startActivity(i);
     }

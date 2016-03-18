@@ -8,42 +8,34 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
-import static android.Manifest.permission.READ_CONTACTS;
+import java.util.List;
 
 /**
  * A login screen that offers login via group/password.
  */
-public class GroupLoginActivity extends AppCompatActivity {
+public class CreateGroupActivity extends AppCompatActivity{
 
     /**
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world", " : "
-    };
+
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -52,6 +44,7 @@ public class GroupLoginActivity extends AppCompatActivity {
     // UI references.
     private AutoCompleteTextView mGroupView;
     private EditText mPasswordView;
+    private EditText mPasswordConfirmView;
     private View mProgressView;
     private View mLoginFormView;
     private String uid;
@@ -59,13 +52,16 @@ public class GroupLoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group_login);
+        setContentView(R.layout.activity_create_group);
         // Set up the login form.
-        uid = getIntent().getStringExtra("UID");
-        mGroupView = (AutoCompleteTextView) findViewById(R.id.group);
         Firebase.setAndroidContext(this);
+        mGroupView = (AutoCompleteTextView) findViewById(R.id.group);
+        // populateAutoComplete();
+        uid = getIntent().getStringExtra("UID");
+        System.out.println(uid);
         mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mPasswordConfirmView = (EditText) findViewById(R.id.password_confirm);
+      /*  mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
@@ -74,57 +70,33 @@ public class GroupLoginActivity extends AppCompatActivity {
                 }
                 return false;
             }
-        });
+        });*/
 
-        Button signInButton = (Button) findViewById(R.id.sign_in_button);
-        signInButton.setOnClickListener(new OnClickListener() {
+        Button mGroupSignInButton = (Button) findViewById(R.id.group_register_button);
+        mGroupSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
             }
         });
 
-        Button registerButton = (Button) findViewById(R.id.register_button);
-        registerButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                registerButtonClicked();
-            }
-        });
-
-
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
-    public void registerButtonClicked(){
-        Intent i = new Intent(this, CreateGroupActivity.class);
-        i.putExtra("UID", uid);
-        startActivity(i);
+
+    /**
+     * Callback received when a permissions request has been completed.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_READ_CONTACTS) {
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //populateAutoComplete();
+            }
+        }
     }
 
-
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mGroupView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -139,14 +111,26 @@ public class GroupLoginActivity extends AppCompatActivity {
         // Reset errors.
         mGroupView.setError(null);
         mPasswordView.setError(null);
-
+        mPasswordConfirmView.setError(null);
         // Store values at the time of the login attempt.
         final String group = mGroupView.getText().toString();
         final String password = mPasswordView.getText().toString();
+        final String password_confirm = mPasswordConfirmView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
+        // Check for a valid password, if the user entered one.
+        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+            mPasswordView.setError(getString(R.string.error_invalid_password));
+            focusView = mPasswordView;
+            cancel = true;
+        }
+        if (!TextUtils.isEmpty(password) && !password.equals(password_confirm)) {
+            mPasswordView.setError(getString(R.string.error_mismatched_password));
+            focusView = mPasswordView;
+            cancel = true;
+        }
         // Check for a valid group address.
         if (TextUtils.isEmpty(group)) {
             mGroupView.setError(getString(R.string.error_field_required));
@@ -162,23 +146,16 @@ public class GroupLoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            //mAuthTask = new UserLoginTask(group, password);
-            //  mAuthTask.execute((Void) null);
             final Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
             ref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     if (snapshot.child("groups").hasChild(group)) {
-                        if (snapshot.child("groups").child(group).child("password").getValue().equals(password)) {
-                            ref.child("users").child(uid).child("group").setValue(group);
-                            loginSuccess(group);
-                        } else {
-                            showProgress(false);
-                            mPasswordView.setError(getString(R.string.error_incorrect_password));
-                        }
+                        mGroupView.setError(getString(R.string.error_invalid_group));
                     } else {
-                        showProgress(false);
-                        mGroupView.setError(getString(R.string.error_no_group));
+                        ref.child("users").child(uid).child("group").setValue(group);
+                        ref.child("groups").child(group).child("password").setValue(password);
+                        loginSuccess(group);
                     }
                 }
 
@@ -187,14 +164,22 @@ public class GroupLoginActivity extends AppCompatActivity {
                     System.out.println("The read failed: " + firebaseError.getMessage());
                 }
             });
+            mAuthTask = new UserLoginTask(group, password);
+            mAuthTask.execute((Void) null);
+
         }
+    }
+
+
+    private boolean isPasswordValid(String password) {
+        //TODO: Replace this with your own logic
+        return password.length() > 4;
     }
     private void loginSuccess(String groupName){
         Intent i = new Intent(this, MainActivity.class);
         i.putExtra("group", groupName);
         startActivity(i);
     }
-
     /**
      * Shows the progress UI and hides the login form.
      */
@@ -234,6 +219,17 @@ public class GroupLoginActivity extends AppCompatActivity {
 
 
 
+    private void addGroupsToAutoComplete(List<String> groupAddressCollection) {
+        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(CreateGroupActivity.this,
+                        android.R.layout.simple_dropdown_item_1line, groupAddressCollection);
+
+        mGroupView.setAdapter(adapter);
+    }
+
+
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -259,13 +255,6 @@ public class GroupLoginActivity extends AppCompatActivity {
                 return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mGroup)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
 
             // TODO: register the new account here.
             return true;
@@ -277,9 +266,7 @@ public class GroupLoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-                //go to the Main Activity Screen
-                Intent i = new Intent(GroupLoginActivity.this, MainActivity.class);
-                startActivity(i);
+                // finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
