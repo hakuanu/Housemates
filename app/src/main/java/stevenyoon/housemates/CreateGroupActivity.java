@@ -153,7 +153,7 @@ public class CreateGroupActivity extends AppCompatActivity{
                     if (snapshot.child("groups").hasChild(group)) {
                         mGroupView.setError(getString(R.string.error_invalid_group));
                     } else {
-                        ref.child("users").child(uid).child("groups").child(group).setValue(true);
+                        ref.child("users").child(uid).child("group").setValue(group);
                         ref.child("groups").child(group).child("password").setValue(password);
                         loginSuccess(group);
                     }

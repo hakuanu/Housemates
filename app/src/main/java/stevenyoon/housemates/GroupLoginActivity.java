@@ -170,8 +170,8 @@ public class GroupLoginActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot snapshot) {
                     if (snapshot.child("groups").hasChild(group)) {
                         if (snapshot.child("groups").child(group).child("password").getValue().equals(password)) {
+                            ref.child("users").child(uid).child("group").setValue(group);
                             loginSuccess(group);
-                            System.out.println("success!!!!");
                         } else {
                             showProgress(false);
                             mPasswordView.setError(getString(R.string.error_incorrect_password));

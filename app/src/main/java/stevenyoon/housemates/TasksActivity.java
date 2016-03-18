@@ -3,6 +3,7 @@ package stevenyoon.housemates;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -158,7 +159,7 @@ public class TasksActivity extends AppCompatActivity
     private ArrayAdapter<Task> itemsAdapter;
     private ListView listItems;
     private MyAdapter adapt;
-
+   private  ValueEventListener vel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -185,11 +186,18 @@ public class TasksActivity extends AppCompatActivity
         listItems.setAdapter(adapt); //itemsAdapter
         setupListViewListener();
         loadTasksFromDB();
+        final Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                ref.removeEventListener(vel);
+            }
+        }, 500);
     }
 
     private void loadTasksFromDB(){
         Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-        ref.addValueEventListener(new ValueEventListener() {
+        vel = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.child("groups").child(group).hasChild("tasks")) {
@@ -206,7 +214,8 @@ public class TasksActivity extends AppCompatActivity
             public void onCancelled(FirebaseError firebaseError) {
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
-        });
+        };
+        ref.addValueEventListener(vel);
     }
 
     public void addTask(View v) {
