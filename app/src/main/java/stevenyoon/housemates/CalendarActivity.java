@@ -26,7 +26,7 @@ import java.util.Date;
 public class CalendarActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private ArrayList<Event> events;
+    public ArrayList<Event> events;
     public AlertDialog.Builder eventPrompt;
 
 
@@ -97,6 +97,7 @@ public class CalendarActivity extends AppCompatActivity
 
     public void addEvent(View v) {
         eventPrompt.show();
+        //System.out.println(events.size());
         for (int i = 0; i < events.size(); i++) {
             System.out.println(events.get(i).getEventName());
         }
