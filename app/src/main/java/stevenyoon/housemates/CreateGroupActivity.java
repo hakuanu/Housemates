@@ -3,17 +3,11 @@ package stevenyoon.housemates;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -24,18 +18,17 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login via group/password.
  */
-public class CreateAccountActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class CreateGroupActivity extends AppCompatActivity{
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -49,21 +42,23 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private AutoCompleteTextView mGroupView;
     private EditText mPasswordView;
     private EditText mPasswordConfirmView;
     private View mProgressView;
     private View mLoginFormView;
+    private String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_account);
+        setContentView(R.layout.activity_create_group);
         // Set up the login form.
         Firebase.setAndroidContext(this);
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-       // populateAutoComplete();
-
+        mGroupView = (AutoCompleteTextView) findViewById(R.id.group);
+        // populateAutoComplete();
+        uid = getIntent().getStringExtra("UID");
+        System.out.println(uid);
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordConfirmView = (EditText) findViewById(R.id.password_confirm);
       /*  mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -77,8 +72,8 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
             }
         });*/
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_register_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        Button mGroupSignInButton = (Button) findViewById(R.id.group_register_button);
+        mGroupSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
@@ -105,7 +100,7 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
 
     /**
      * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
+     * If there are form errors (invalid group, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
@@ -114,11 +109,11 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
         }
 
         // Reset errors.
-        mEmailView.setError(null);
+        mGroupView.setError(null);
         mPasswordView.setError(null);
         mPasswordConfirmView.setError(null);
         // Store values at the time of the login attempt.
-        final String email = mEmailView.getText().toString();
+        final String group = mGroupView.getText().toString();
         final String password = mPasswordView.getText().toString();
         final String password_confirm = mPasswordConfirmView.getText().toString();
 
@@ -136,14 +131,10 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
             focusView = mPasswordView;
             cancel = true;
         }
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        // Check for a valid group address.
+        if (TextUtils.isEmpty(group)) {
+            mGroupView.setError(getString(R.string.error_field_required));
+            focusView = mGroupView;
             cancel = true;
         }
 
@@ -156,51 +147,37 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
             // perform the user login attempt.
             showProgress(true);
             final Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-            final int i = 0;
-            ref.createUser(email, password, new Firebase.ValueResultHandler<Map<String, Object>>() {
+            ref.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onSuccess(Map<String, Object> result) {
-                    System.out.println("Successfully created user account with uid: " + result.get("uid"));
-                    ref.authWithPassword(email, password, new Firebase.AuthResultHandler() {
-                        @Override
-                        public void onAuthenticated(AuthData authData) {
-                            loginSuccess(authData.getUid());
-                        }
-                        @Override
-                        public void onAuthenticationError(FirebaseError firebaseError) {
-                            // there was an error
-                        }
-                    });
-                }
-                @Override
-                public void onError(FirebaseError firebaseError) {
-                    if(firebaseError.getCode() == FirebaseError.EMAIL_TAKEN) {
-                        mEmailView.setError(getString(R.string.error_email_taken));
-                      //  focusView = mEmailView;
-                    } else{
-                        System.out.println(firebaseError.getMessage());
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot.child("groups").hasChild(group)) {
+                        mGroupView.setError(getString(R.string.error_invalid_group));
+                    } else {
+                        ref.child("users").child(uid).child("group").setValue(group);
+                        ref.child("groups").child(group).child("password").setValue(password);
+                        loginSuccess(group);
                     }
+                }
 
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    System.out.println("The read failed: " + firebaseError.getMessage());
                 }
             });
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(group, password);
             mAuthTask.execute((Void) null);
 
         }
     }
 
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
-    }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
-    private void loginSuccess(String uid){
-        Intent i = new Intent(this, GroupLoginActivity.class);
-        i.putExtra("UID", uid);
+    private void loginSuccess(String groupName){
+        Intent i = new Intent(this, MainActivity.class);
+        i.putExtra("group", groupName);
         startActivity(i);
     }
     /**
@@ -239,59 +216,19 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
         }
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
 
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
 
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
+    private void addGroupsToAutoComplete(List<String> groupAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(CreateAccountActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
+                new ArrayAdapter<>(CreateGroupActivity.this,
+                        android.R.layout.simple_dropdown_item_1line, groupAddressCollection);
 
-        mEmailView.setAdapter(adapter);
+        mGroupView.setAdapter(adapter);
     }
 
 
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
@@ -299,11 +236,11 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
+        private final String mGroup;
         private final String mPassword;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
+        UserLoginTask(String group, String password) {
+            mGroup = group;
             mPassword = password;
         }
 
@@ -329,7 +266,7 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
             showProgress(false);
 
             if (success) {
-               // finish();
+                // finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

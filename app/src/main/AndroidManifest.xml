@@ -42,6 +42,18 @@
         </activity>
         <activity android:name=".CalendarActivity">
         </activity>
+        <activity
+            android:name=".GroupLoginActivity"
+            android:label="GroupLoginActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
+        <activity
+            android:name=".CreateGroupActivity"
+            android:label="CreateGroupActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
     </application>
 
 </manifest>

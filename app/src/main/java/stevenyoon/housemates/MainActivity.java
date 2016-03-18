@@ -2,9 +2,6 @@ package stevenyoon.housemates;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -13,15 +10,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.firebase.client.Firebase;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
+    public String group;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        group = getIntent().getStringExtra("group");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -81,6 +78,7 @@ public class MainActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_tasks) {
             Intent i = new Intent(MainActivity.this, TasksActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
@@ -88,6 +86,7 @@ public class MainActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_settings) {
             Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
         else if (id == R.id.nav_share) {
