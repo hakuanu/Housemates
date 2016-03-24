@@ -160,6 +160,7 @@ public class TasksActivity extends AppCompatActivity
     private ListView listItems;
     private MyAdapter adapt;
    private  ValueEventListener vel;
+    final Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -186,17 +187,16 @@ public class TasksActivity extends AppCompatActivity
         listItems.setAdapter(adapt); //itemsAdapter
         setupListViewListener();
         loadTasksFromDB();
-        final Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
+               // Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
                 ref.removeEventListener(vel);
             }
         }, 500);
     }
 
     private void loadTasksFromDB(){
-        Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
         vel = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -215,6 +215,7 @@ public class TasksActivity extends AppCompatActivity
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         };
+      //  Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
         ref.addValueEventListener(vel);
     }
 
@@ -228,13 +229,13 @@ public class TasksActivity extends AppCompatActivity
         else {
 
             Task task = new Task(s, 0);
-            t.setText("");
-            Map<String, String> fbTask = new HashMap<String, String>();
-            fbTask.put("description", s);
-            Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-            ref.child("groups").child(group).child("tasks").push().setValue(fbTask);
             adapt.add(task);
             adapt.notifyDataSetChanged();
+            t.setText("");
+           Map<String, String> fbTask = new HashMap<String, String>();
+            fbTask.put("description", s);
+           // Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+            ref.child("groups").child(group).child("tasks").push().setValue(fbTask);
         }
     }
 
