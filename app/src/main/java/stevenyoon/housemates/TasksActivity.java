@@ -39,23 +39,19 @@ public class TasksActivity extends AppCompatActivity
     /*private ArrayList<CheckBox> items;
     private ArrayAdapter<CheckBox> itemsAdapter;
     private ListView listItems;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tasks);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
         listItems = (ListView) findViewById(R.id.listedItems);
         items = new ArrayList<CheckBox>();
         itemsAdapter = new ArrayAdapter<CheckBox>(this,
@@ -64,7 +60,6 @@ public class TasksActivity extends AppCompatActivity
         listItems.setAdapter(itemsAdapter);
         setupListViewListener();
     }
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -74,35 +69,29 @@ public class TasksActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.tasks_menu, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (id == R.id.nav_calendar) {
             // Handle the camera action
         }
@@ -111,24 +100,19 @@ public class TasksActivity extends AppCompatActivity
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
-
         }
         else if (id == R.id.nav_settings) {
             Intent i = new Intent(TasksActivity.this, SettingsActivity.class);
             startActivity(i);
         }
         else if (id == R.id.nav_share) {
-
         }
         else if (id == R.id.nav_messaging) {
-
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
     public void onAddItem(View v) {
         EditText newItem = (EditText) findViewById(R.id.newItem);
         String itemText = newItem.getText().toString();
@@ -137,7 +121,6 @@ public class TasksActivity extends AppCompatActivity
         itemsAdapter.add(temp);
         newItem.setText("");
     }
-
     private void setupListViewListener() {
         listItems.setOnItemLongClickListener(
                 new AdapterView.OnItemLongClickListener() {
@@ -151,7 +134,6 @@ public class TasksActivity extends AppCompatActivity
                         // Return true consumes the long click event (marks it handled)
                         return true;
                     }
-
                 });
     }*/
 
@@ -159,8 +141,9 @@ public class TasksActivity extends AppCompatActivity
     private ArrayAdapter<Task> itemsAdapter;
     private ListView listItems;
     private MyAdapter adapt;
-   private  ValueEventListener vel;
+    private  ValueEventListener vel;
     final Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -302,7 +285,8 @@ public class TasksActivity extends AppCompatActivity
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
-
+            Intent i = new Intent(TasksActivity.this, SplitwiseActivity.class);
+            startActivity(i);
         }
         else if (id == R.id.nav_settings) {
             Intent i = new Intent(TasksActivity.this, SettingsActivity.class);

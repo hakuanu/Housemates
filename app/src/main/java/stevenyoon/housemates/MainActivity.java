@@ -72,7 +72,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_calendar) {
-            // Handle the camera action
+
+            Intent i = new Intent(MainActivity.this, CalendarActivity.class);
+            startActivity(i);
         }
         else if (id == R.id.nav_tasks) {
             Intent i = new Intent(MainActivity.this, TasksActivity.class);
@@ -80,7 +82,8 @@ public class MainActivity extends AppCompatActivity
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
-
+            Intent i = new Intent(MainActivity.this, SplitwiseActivity.class);
+            startActivity(i);
         }
         else if (id == R.id.nav_settings) {
             Intent i = new Intent(MainActivity.this, SettingsActivity.class);
