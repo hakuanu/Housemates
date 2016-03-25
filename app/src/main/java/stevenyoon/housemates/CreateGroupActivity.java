@@ -147,7 +147,7 @@ public class CreateGroupActivity extends AppCompatActivity{
             // perform the user login attempt.
             showProgress(true);
             final Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-            ref.addValueEventListener(new ValueEventListener() {
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     if (snapshot.child("groups").hasChild(group)) {

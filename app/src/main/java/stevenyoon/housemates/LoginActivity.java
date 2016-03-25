@@ -225,7 +225,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void loginSuccess(String uid){
         final String uid2 = uid;
         Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.child("users").child(uid2).hasChild("group")) {
