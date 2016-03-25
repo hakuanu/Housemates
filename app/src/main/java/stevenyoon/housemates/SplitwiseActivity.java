@@ -22,14 +22,17 @@ import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.http.BasicAuthentication;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpResponse;
+//import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 
 import org.apache.http.ParseException;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
@@ -37,7 +40,20 @@ import org.json.JSONObject;
 
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Calendar;
+
+import oauth.signpost.OAuthConsumer;
+import oauth.signpost.OAuthProvider;
+import oauth.signpost.basic.DefaultOAuthConsumer;
+import oauth.signpost.basic.DefaultOAuthProvider;
+import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
+import oauth.signpost.exception.OAuthNotAuthorizedException;
 
 public class SplitwiseActivity extends AppCompatActivity {
 
@@ -66,6 +82,16 @@ public class SplitwiseActivity extends AppCompatActivity {
     private static final String CLIENT_ID_PARAM = "client_id";
     private static final String STATE_PARAM = "state";
     private static final String REDIRECT_URI_PARAM = "redirect_uri";
+
+    private static final String CONSUMER_KEY = "zxZolcntA2h9IO76sEUg818wmU92QQcduwpPrR4d";
+    private static final String CONSUMER_SECRET = "YXJ8XpBVimRlDq90dLD5w7RpKXKZLqPxzGJl6Mr8";
+    private String ACCESS_TOKEN = "";
+    private String TOKEN_SECRET = "";
+    private static final String REQUEST_TOKEN_ENDPOINT_URL = "https://secure.splitwise.com/api/v3.0/get_request_token";
+    private static final String ACCESS_TOKEN_ENDPOINT_URL = "https://secure.splitwise.com/api/v3.0/get_access_token";
+    private static final String AUTHORIZE_WEBSITE_URL = "https://secure.splitwise.com/authorize";
+    private static final String CALLBACK_URL = null;
+
     /*---------------------------------------*/
     private static final String QUESTION_MARK = "?";
     private static final String AMPERSAND = "&";
@@ -85,8 +111,11 @@ public class SplitwiseActivity extends AppCompatActivity {
         //Request focus for the webview
         webView.requestFocus(View.FOCUS_DOWN);
 
+
         //Show a progress dialog to the user
         pd = ProgressDialog.show(this, "", "loading",true);
+        webView.getSettings().setJavaScriptEnabled(true);
+
 
         //Set a custom web view client
         webView.setWebViewClient(new WebViewClient() {
@@ -101,6 +130,7 @@ public class SplitwiseActivity extends AppCompatActivity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String authorizationUrl) {
+
                 //This method will be called when the Auth proccess redirect to our RedirectUri.
                 //We will check the url looking for our RedirectUri.
                 if (authorizationUrl.startsWith(REDIRECT_URI)) {
@@ -124,6 +154,7 @@ public class SplitwiseActivity extends AppCompatActivity {
 
                     //Generate URL for requesting Access Token
                     String accessTokenUrl = getAccessTokenUrl(authorizationToken);
+
                     //We make the request in a AsyncTask
                     new PostRequestAsyncTask().execute(accessTokenUrl);
 
@@ -141,6 +172,75 @@ public class SplitwiseActivity extends AppCompatActivity {
         Log.i("Authorize", "Loading Auth Url: " + authUrl);
         //Load the authorization URL into the webView
         webView.loadUrl(authUrl);
+
+/*
+        // create a consumer object and configure it with the access
+        // token and token secret obtained from the service provider
+        CommonsHttpOAuthConsumer consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY,
+                CONSUMER_SECRET);
+
+        // create a new service provider object and configure it with
+        // the URLs which provide request tokens, access tokens, and
+        // the URL to which users are sent in order to grant permission
+        // to your application to access protected resources
+        CommonsHttpOAuthProvider provider = new CommonsHttpOAuthProvider(
+                REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
+                AUTHORIZE_WEBSITE_URL);
+        // fetches a request token from the service provider and builds
+        // a url based on AUTHORIZE_WEBSITE_URL and CALLBACK_URL to
+        // which your app must now send the user
+        try {
+
+            //consumer.setTokenWithSecret(ACCESS_TOKEN, TOKEN_SECRET);
+
+            //Show authorization in view
+            webView = (WebView)findViewById(R.id.splitwise_activity_web_view);
+            //Request focus for the webview
+            webView.requestFocus(View.FOCUS_DOWN);
+            //Show a progress dialog to the user
+            pd = ProgressDialog.show(this, "", "loading",true);
+            webView.getSettings().setJavaScriptEnabled(true);
+
+            String authURL = provider.retrieveRequestToken(consumer, "http://www.example.com");
+            webView.loadUrl(authURL);
+
+            Log.v("Request Token", consumer.getToken());
+            Log.v("Token Secret", consumer.getTokenSecret());
+
+            provider.retrieveAccessToken(consumer, "");
+
+            Log.v("Access Token", consumer.getToken());
+            Log.v("Token Secret", consumer.getTokenSecret());
+
+
+            //URL requestURL = new URL("https://secure.splitwise.com/api/v3.0/get_groups");
+
+            // create an HTTP request to a protected resource
+            HttpGet request = new HttpGet("https://secure.splitwise.com/api/v3.0/get_groups");
+
+            consumer.sign(request);
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpResponse response = httpClient.execute(request);
+
+            Log.v("Response Code", Integer.toString(response.getStatusLine().getStatusCode()));
+            Log.v("Response Message", response.getStatusLine().getReasonPhrase());
+
+
+        } catch (OAuthMessageSignerException e) {
+            e.printStackTrace();
+        } catch (OAuthNotAuthorizedException e) {
+            e.printStackTrace();
+        } catch (OAuthExpectationFailedException e) {
+            e.printStackTrace();
+        } catch (OAuthCommunicationException e) {
+            e.printStackTrace();
+        }  catch (MalformedURLException e) {
+        e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
+
 
     }
 
@@ -165,6 +265,7 @@ public class SplitwiseActivity extends AppCompatActivity {
      * Method that generates the url for get the authorization token from the Service
      * @return Url
      */
+
     private static String getAuthorizationUrl(){
         return AUTHORIZATION_URL
                 +QUESTION_MARK+RESPONSE_TYPE_PARAM+EQUALS+RESPONSE_TYPE_VALUE
@@ -190,13 +291,14 @@ public class SplitwiseActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(String... urls) {
             if(urls.length>0){
-                String url = urls[0];
+                String url = "https://secure.splitwise.com/api/v3.0/get_groups";
                 HttpClient httpClient = new DefaultHttpClient();
                 HttpPost httpost = new HttpPost(url);
                 try{
-                    Log.v("Debugging", "Got Here");
                     //FIX THIS (check what the response is, what to parse, etc)
-                    org.apache.http.HttpResponse response = httpClient.execute(httpost);
+                    HttpResponse response = httpClient.execute(httpost);
+                    String responseBody = EntityUtils.toString(response.getEntity());
+                    Log.v("Debugging", responseBody);
                     if(response!=null){
                         //If status is OK 200
                         if(response.getStatusLine().getStatusCode()==200){
@@ -246,6 +348,7 @@ public class SplitwiseActivity extends AppCompatActivity {
             }
             if(status){
                 //If everything went Ok, change to another activity.
+                Log.v("Debugging", "worked!");
                 Intent startProfileActivity = new Intent(SplitwiseActivity.this, MainActivity.class);
                 SplitwiseActivity.this.startActivity(startProfileActivity);
             }
@@ -256,5 +359,5 @@ public class SplitwiseActivity extends AppCompatActivity {
             }
         }
 
-    };
+    }
 }

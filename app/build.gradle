@@ -32,4 +32,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
     compile 'com.firebase:firebase-client-android:2.5.2+'
+    compile files('libs/signpost-core-1.2.1.2.jar')
+    compile 'commons-codec:commons-codec:1.10'
+    compile files('libs/signpost-commonshttp4-1.2.1.2.jar')
 }
