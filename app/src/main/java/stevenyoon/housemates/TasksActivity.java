@@ -3,7 +3,6 @@ package stevenyoon.housemates;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -141,7 +141,8 @@ public class TasksActivity extends AppCompatActivity
     private ArrayAdapter<Task> itemsAdapter;
     private ListView listItems;
     private MyAdapter adapt;
-   private  ValueEventListener vel;
+    private  ValueEventListener vel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -168,19 +169,43 @@ public class TasksActivity extends AppCompatActivity
         listItems.setAdapter(adapt); //itemsAdapter
         setupListViewListener();
         loadTasksFromDB();
-        final Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                ref.removeEventListener(vel);
-            }
-        }, 500);
     }
 
     private void loadTasksFromDB(){
         Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-        vel = new ValueEventListener() {
+        ref = ref.child("groups").child(group).child("tasks");
+        ref.addChildEventListener(new ChildEventListener() {
+            // Retrieve new posts as they are added to the database
             @Override
+            public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
+                String s = (String)snapshot.child("description").getValue();
+                Task task = new Task(s, 0);
+                adapt.add(task);
+                adapt.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+            @Override
+            public void onChildRemoved(DataSnapshot snapshot) {
+                System.out.println("The read failed: ");
+            }
+            @Override
+            public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                System.out.println("The read failed: ");
+            }
+            @Override
+            public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
+                System.out.println("The read failed: ");
+            }
+
+            //... ChildEventListener also defines onChildChanged, onChildRemoved,
+            //    onChildMoved and onCanceled, covered in later sections.
+        });
+        /*vel = new ValueEventListener() {
+            @Override
+
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.child("groups").child(group).hasChild("tasks")) {
                     for (DataSnapshot child : snapshot.child("groups").child(group).child("tasks").getChildren()) {
@@ -197,7 +222,8 @@ public class TasksActivity extends AppCompatActivity
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         };
-        ref.addValueEventListener(vel);
+        Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+        ref.addValueEventListener(vel);*/
     }
 
     public void addTask(View v) {
@@ -208,15 +234,12 @@ public class TasksActivity extends AppCompatActivity
             Toast.makeText(this, "Empty task not added", Toast.LENGTH_SHORT);
         }
         else {
-
-            Task task = new Task(s, 0);
-            t.setText("");
             Map<String, String> fbTask = new HashMap<String, String>();
             fbTask.put("description", s);
             Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-            ref.child("groups").child(group).child("tasks").push().setValue(fbTask);
-            adapt.add(task);
-            adapt.notifyDataSetChanged();
+            ref = ref.child("groups").child(group).child("tasks");
+            ref.push().setValue(fbTask);
+            t.setText("");
         }
     }
 
@@ -277,6 +300,7 @@ public class TasksActivity extends AppCompatActivity
 
         if (id == R.id.nav_calendar) {
             // Handle the camera action
+            Intent i = new Intent(TasksActivity.this, CalendarActivity.class);
         }
         else if (id == R.id.nav_tasks) {
             Intent i = new Intent(TasksActivity.this, TasksActivity.class);
