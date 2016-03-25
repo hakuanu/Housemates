@@ -300,6 +300,7 @@ public class TasksActivity extends AppCompatActivity
 
         if (id == R.id.nav_calendar) {
             // Handle the camera action
+            Intent i = new Intent(TasksActivity.this, CalendarActivity.class);
         }
         else if (id == R.id.nav_tasks) {
             Intent i = new Intent(TasksActivity.this, TasksActivity.class);

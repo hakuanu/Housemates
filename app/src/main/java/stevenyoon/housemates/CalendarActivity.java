@@ -22,12 +22,20 @@ import android.view.View;
 import android.widget.TextView;
 import android.view.LayoutInflater;
 import java.util.Date;
+import android.view.ViewGroup;
+import android.view.InflateException;
 
 public class CalendarActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static ArrayList<Event> events = new ArrayList<>();
     public AlertDialog.Builder eventPrompt;
+    String eventName;
+    String eventDate;
+    String eventTimeS;
+    String eventTimeE;
+    String eventClub;
+    String eventDetails;
 
 
     @Override
@@ -48,13 +56,30 @@ public class CalendarActivity extends AppCompatActivity
 
 
 
+    }
+
+    public void addEvent(View v) {
+
+        //if (prompt!=null);
 
         /**
          * Sets all the values for the event to be added
          */
+
         LayoutInflater factory = LayoutInflater.from(this);
 
-        final View textEventEntry = factory.inflate(R.layout.event_prompt, null);
+        View textEventEntry = factory.inflate(R.layout.event_prompt, null, false);
+        if (textEventEntry != null) {
+            ViewGroup parent = (ViewGroup) textEventEntry.getParent();
+            if (parent != null) {
+                parent.removeView(textEventEntry);
+            }
+        }
+        try {
+            textEventEntry = factory.inflate(R.layout.event_prompt, null, false);
+        } catch (InflateException e) {
+
+        }
 
         final EditText eventNameInput = (EditText) textEventEntry.findViewById(R.id.newEventName);
         final EditText eventDateInput = (EditText) textEventEntry.findViewById(R.id.newEventDate);
@@ -66,7 +91,6 @@ public class CalendarActivity extends AppCompatActivity
         final EditText eventDetailsInput = (EditText) textEventEntry.findViewById(R.id
                 .newEventDetails);
 
-
         eventPrompt = new AlertDialog.Builder(this);
         eventPrompt.setTitle("Enter New Event");
 
@@ -74,15 +98,18 @@ public class CalendarActivity extends AppCompatActivity
 
         eventPrompt.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String eventName = eventNameInput.getText().toString();
-                String eventDate = eventDateInput.getText().toString();
-                String eventTimeS = eventTimeStartInput.getText().toString();
-                String eventTimeE = eventTimeEndInput.getText().toString();
-                String eventClub = eventClubInput.getText().toString();
-                String eventDetails = eventDetailsInput.getText().toString();
+                eventName = eventNameInput.getText().toString();
+                eventDate = eventDateInput.getText().toString();
+                eventTimeS = eventTimeStartInput.getText().toString();
+                eventTimeE = eventTimeEndInput.getText().toString();
+                eventClub = eventClubInput.getText().toString();
+                eventDetails = eventDetailsInput.getText().toString();
                 System.out.println(events.size());
                 events.add(new Event(eventDate, eventTimeS, eventTimeE, eventName, eventClub,
                         eventDetails));
+                System.out.println(events.size());
+                displayEvents();
+
 
             }
         });
@@ -93,17 +120,15 @@ public class CalendarActivity extends AppCompatActivity
             }
         });
 
+        AlertDialog prompt = eventPrompt.create();
+        prompt.show();
+
     }
 
-    public void addEvent(View v) {
-        events.add(new Event("ugh", "UGH", "ugH", "UgH", "why", "hmm"));
-        eventPrompt.show();
-
-        System.out.println(events.size());
+    public void displayEvents() {
         for (int i = 0; i < events.size(); i++) {
             System.out.println(events.get(i).getEventName());
         }
-
     }
 
     @Override
