@@ -26,7 +26,7 @@ import java.util.Date;
 public class CalendarActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public ArrayList<Event> events;
+    public static ArrayList<Event> events = new ArrayList<>();
     public AlertDialog.Builder eventPrompt;
 
 
@@ -46,7 +46,7 @@ public class CalendarActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        events = new ArrayList<Event>();
+
 
 
         /**
@@ -80,8 +80,8 @@ public class CalendarActivity extends AppCompatActivity
                 String eventTimeE = eventTimeEndInput.getText().toString();
                 String eventClub = eventClubInput.getText().toString();
                 String eventDetails = eventDetailsInput.getText().toString();
-
-                events.add(new Event(eventName, eventDate, eventTimeS, eventTimeE, eventClub,
+                System.out.println(events.size());
+                events.add(new Event(eventDate, eventTimeS, eventTimeE, eventName, eventClub,
                         eventDetails));
 
             }
@@ -96,8 +96,10 @@ public class CalendarActivity extends AppCompatActivity
     }
 
     public void addEvent(View v) {
+        events.add(new Event("ugh", "UGH", "ugH", "UgH", "why", "hmm"));
         eventPrompt.show();
-        //System.out.println(events.size());
+
+        System.out.println(events.size());
         for (int i = 0; i < events.size(); i++) {
             System.out.println(events.get(i).getEventName());
         }
