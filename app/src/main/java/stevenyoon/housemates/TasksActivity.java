@@ -298,9 +298,14 @@ public class TasksActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_calendar) {
-            // Handle the camera action
+        if (id == R.id.nav_home){
+            Intent i = new Intent(TasksActivity.this, MainActivity.class);
+            startActivity(i);
+        }
+        else if(id == R.id.nav_calendar) {
+
             Intent i = new Intent(TasksActivity.this, CalendarActivity.class);
+            startActivity(i);
         }
         else if (id == R.id.nav_tasks) {
             Intent i = new Intent(TasksActivity.this, TasksActivity.class);

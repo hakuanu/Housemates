@@ -1,19 +1,42 @@
 package stevenyoon.housemates;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.ListView;
+
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public String group;
+    private List<Task> smallList;
+    private MyAdapter adapt;
+    private ListView listItems;
+    private  ValueEventListener vel;
+    private int tasks;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +45,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        Firebase.setAndroidContext(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -31,6 +55,46 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        smallList = new ArrayList<Task>();
+        adapt = new MyAdapter(this, R.layout.list_inner_view, smallList);
+        listItems = (ListView) findViewById(R.id.listedItems);
+        listItems.setAdapter(adapt); //itemsAdapter
+        tasks = 0;
+        loadTasksFromDB();
+        final Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                ref.removeEventListener(vel);
+            }
+        }, 500);
+    }
+
+    private void loadTasksFromDB(){
+        Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+        vel = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.child("groups").child(group).hasChild("tasks")) {
+                    for (DataSnapshot child : snapshot.child("groups").child(group).child("tasks").getChildren()) {
+                        String s = (String)child.child("description").getValue();
+                        Task task = new Task(s, 0);
+                        if(tasks < 5) {
+                            adapt.add(task);
+                            adapt.notifyDataSetChanged();
+                        }
+                        tasks ++;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        };
+        ref.addValueEventListener(vel);
     }
 
     @Override
@@ -71,7 +135,11 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_calendar) {
+        if (id == R.id.nav_home){
+            Intent i = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(i);
+        }
+        else if(id == R.id.nav_calendar) {
 
             Intent i = new Intent(MainActivity.this, CalendarActivity.class);
             startActivity(i);
@@ -100,5 +168,50 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    private class MyAdapter extends ArrayAdapter<Task> {
+        Context context;
+        List<Task> taskList = new ArrayList<Task>();
+        int layoutResourceId;
+        public MyAdapter(Context context, int layoutResourceId,
+                         List<Task> objects) {
+            super(context, layoutResourceId, objects);
+            this.layoutResourceId = layoutResourceId;
+            this.taskList = objects;
+            this.context = context;
+        }
+        /**
+         * This method will DEFINe what the view inside the list view will
+         * finally look like Here we are going to code that the checkbox state
+         * is the status of task and check box text is the task name
+         */
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            CheckBox chk = null;
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) context
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.list_inner_view,
+                        parent, false);
+                chk = (CheckBox) convertView.findViewById(R.id.checkBox1);
+                convertView.setTag(chk);
+                chk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        CheckBox cb = (CheckBox) v;
+                        Task changeTask = (Task) cb.getTag();
+                        changeTask.changeStatus();
+                    }
+                });
+            } else {
+                chk = (CheckBox) convertView.getTag();
+            }
+            Task current = taskList.get(position);
+            chk.setText(current.getDescription());
+            chk.setChecked(current.getStatus() == 1 ? true : false);
+            chk.setTag(current);
+            Log.d("listener", String.valueOf(current.getId()));
+            return convertView;
+        }
     }
 }
