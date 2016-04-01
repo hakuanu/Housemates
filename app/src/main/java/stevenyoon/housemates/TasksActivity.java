@@ -36,106 +36,6 @@ import java.util.Map;
 public class TasksActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private String group;
-    /*private ArrayList<CheckBox> items;
-    private ArrayAdapter<CheckBox> itemsAdapter;
-    private ListView listItems;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tasks);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        listItems = (ListView) findViewById(R.id.listedItems);
-        items = new ArrayList<CheckBox>();
-        itemsAdapter = new ArrayAdapter<CheckBox>(this,
-                android.R.layout.simple_list_item_1, items);
-        itemsAdapter.add(new CheckBox(this));
-        listItems.setAdapter(itemsAdapter);
-        setupListViewListener();
-    }
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.tasks_menu, menu);
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        if (id == R.id.nav_calendar) {
-            // Handle the camera action
-        }
-        else if (id == R.id.nav_tasks) {
-            Intent i = new Intent(TasksActivity.this, TasksActivity.class);
-            startActivity(i);
-        }
-        else if (id == R.id.nav_payment) {
-        }
-        else if (id == R.id.nav_settings) {
-            Intent i = new Intent(TasksActivity.this, SettingsActivity.class);
-            startActivity(i);
-        }
-        else if (id == R.id.nav_share) {
-        }
-        else if (id == R.id.nav_messaging) {
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-    public void onAddItem(View v) {
-        EditText newItem = (EditText) findViewById(R.id.newItem);
-        String itemText = newItem.getText().toString();
-        CheckBox temp = new CheckBox(this);
-        temp.setText(itemText);
-        itemsAdapter.add(temp);
-        newItem.setText("");
-    }
-    private void setupListViewListener() {
-        listItems.setOnItemLongClickListener(
-                new AdapterView.OnItemLongClickListener() {
-                    @Override
-                    public boolean onItemLongClick(AdapterView<?> adapter,
-                                                   View item, int pos, long id) {
-                        // Remove the item within array at position
-                        items.remove(pos);
-                        // Refresh the adapter
-                        itemsAdapter.notifyDataSetChanged();
-                        // Return true consumes the long click event (marks it handled)
-                        return true;
-                    }
-                });
-    }*/
 
     private List<Task> list;
     private ArrayAdapter<Task> itemsAdapter;
@@ -179,7 +79,9 @@ public class TasksActivity extends AppCompatActivity
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
                 String s = (String)snapshot.child("description").getValue();
-                Task task = new Task(s, 0);
+
+                Task  task = new Task(s, 0, previousChildKey);
+
                 adapt.add(task);
                 adapt.notifyDataSetChanged();
             }
@@ -200,30 +102,7 @@ public class TasksActivity extends AppCompatActivity
                 System.out.println("The read failed: ");
             }
 
-            //... ChildEventListener also defines onChildChanged, onChildRemoved,
-            //    onChildMoved and onCanceled, covered in later sections.
         });
-        /*vel = new ValueEventListener() {
-            @Override
-
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.child("groups").child(group).hasChild("tasks")) {
-                    for (DataSnapshot child : snapshot.child("groups").child(group).child("tasks").getChildren()) {
-                        String s = (String)child.child("description").getValue();
-                        Task task = new Task(s, 0);
-                        adapt.add(task);
-                        adapt.notifyDataSetChanged();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-        };
-        Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-        ref.addValueEventListener(vel);*/
     }
 
     public void addTask(View v) {
@@ -237,8 +116,7 @@ public class TasksActivity extends AppCompatActivity
             Map<String, String> fbTask = new HashMap<String, String>();
             fbTask.put("description", s);
             Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-            ref = ref.child("groups").child(group).child("tasks");
-            ref.push().setValue(fbTask);
+            ref.child("groups").child(group).child("tasks").push().setValue(fbTask);
             t.setText("");
         }
     }
@@ -250,8 +128,12 @@ public class TasksActivity extends AppCompatActivity
                     public boolean onItemLongClick(AdapterView<?> adapter,
                                                    View item, int pos, long id) {
                         // Remove the item within array at position
+                        Task t = list.get(pos);
+                        t.getId();
+                        Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+                        ref=ref.child("groups").child(group).child("tasks").child(t.getId());
+                        ref.removeValue();
                         list.remove(pos);
-                        // Refresh the adapter
                         adapt.notifyDataSetChanged();
                         // Return true consumes the long click event (marks it handled)
                         return true;
