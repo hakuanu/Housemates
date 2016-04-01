@@ -1,8 +1,10 @@
 package stevenyoon.housemates;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,7 @@ import android.view.Menu;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
@@ -34,6 +37,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,6 +47,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
@@ -55,6 +64,7 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
+import oauth.signpost.http.HttpParameters;
 
 public class SplitwiseActivity extends AppCompatActivity {
 
@@ -100,63 +110,137 @@ public class SplitwiseActivity extends AppCompatActivity {
     private static final String EQUALS = "=";
 
     private ProgressDialog pd;
-    //final String authUrl;
+    private CommonsHttpOAuthConsumer consumer;
+    private CommonsHttpOAuthProvider provider;
+    private WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splitwise);
         //get the webView from the layout
-        WebView webView = (WebView) findViewById(R.id.splitwise_activity_web_view);
+        webView = (WebView) findViewById(R.id.splitwise_activity_web_view);
 
         //Request focus for the webview
         webView.requestFocus(View.FOCUS_DOWN);
-
-
         //Show a progress dialog to the user
-        //pd = ProgressDialog.show(this, "", "loading", true);
-        //webView.getSettings().setJavaScriptEnabled(true);
+        pd = ProgressDialog.show(this, "", "loading",true);
 
         // create a consumer object and configure it with the access
-        final CommonsHttpOAuthConsumer consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
+        consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
 
         // create a new service provider object and configure it with
         // the URLs which provide request tokens, access tokens, and
         // the URL to which users are sent in order to grant permission
         // to your application to access protected resources
-        CommonsHttpOAuthProvider provider = new CommonsHttpOAuthProvider(
+        provider = new CommonsHttpOAuthProvider(
                 REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
                 AUTHORIZE_WEBSITE_URL);
-        String authUrl = getRequestToken(consumer, provider);
-        //Load the authorization URL into the webView
-        Log.i("Authorize", "Loading Auth Url : " + authUrl);
-        webView.loadUrl(authUrl);
-        getAccessToken(consumer, provider);
+        //RequestToken requestToken = new RequestToken(consumer, provider);
+        //authUrl = getRequestToken(consumer, provider);
+
+        final ExecutorService service;
+        final Future<String> task;
+
+        service = Executors.newFixedThreadPool(1);
+        task    = service.submit(new RequestToken(consumer, provider));
+
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                //This method will be executed each time a page finished loading.
+                //The only we do is dismiss the progressDialog, in case we are showing any.
+                if (pd != null && pd.isShowing()) {
+                    pd.dismiss();
+                }
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String authorizationUrl) {
+                    //We make the request in a AsyncTask
+                new PostRequestAsyncTask().execute(consumer.getToken());
+                return true;
+
+                /*if (authorizationUrl.startsWith(REDIRECT_URI)) {
+                    Log.i("Run PostSyncTask", "Running Task!");
+                    try {
+                        authorizationUrl = task.get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                    new PostRequestAsyncTask().execute(consumer.getToken());
+                }
+                else {
+                    Log.i("Authorize", "Redirecting to: " + authorizationUrl);
+                    webView.loadUrl(authorizationUrl);
+                }
+                return true; */
+            }
+        });
+
+        try {
+            String authUrl = task.get();
+            Log.i("Authorize", "Loading Auth Url : " + authUrl);
+            //Load the authorization URL into the webView
+            webView.loadUrl(authUrl);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        //Show a progress dialog to the user
+        //pd = ProgressDialog.show(this, "", "loading", true);
     }
 
-    private String getRequestToken(final CommonsHttpOAuthConsumer consumer, final CommonsHttpOAuthProvider provider) {
-        final String authUrl;
-        Thread oauth = new Thread() {
-            @Override
-            public void run() {
+    private class PostRequestAsyncTask extends AsyncTask<String, Void, Boolean> {
+
+        @Override
+        protected void onPreExecute(){
+            pd = ProgressDialog.show(SplitwiseActivity.this, "", "loading",true);
+        }
+
+        @Override
+        protected Boolean doInBackground(String... urls) {
+            getAccessToken(consumer, provider);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean status){
+            if(status){
+                //If everything went Ok, change to another activity.
+                Log.v("Debugging", "worked!");
+                Intent startProfileActivity = new Intent(SplitwiseActivity.this, MainActivity.class);
+                SplitwiseActivity.this.startActivity(startProfileActivity);
+            }
+            else{
+                Log.v("Debugging", "request was null");
+                Intent startProfileActivity = new Intent(SplitwiseActivity.this, MainActivity.class);
+                SplitwiseActivity.this.startActivity(startProfileActivity);
+            }
+        }
+
+    }
 
 
-                // fetches a request token from the service provider and builds
-                // a url based on AUTHORIZE_WEBSITE_URL and CALLBACK_URL to
-                // which your app must now send the user
+    private class RequestToken implements Callable<String> {
+        private CommonsHttpOAuthConsumer consumer;
+        private CommonsHttpOAuthProvider provider;
+
+        public RequestToken(CommonsHttpOAuthConsumer consumer, CommonsHttpOAuthProvider provider){
+            this.consumer = consumer;
+            this.provider = provider;
+        }
+
+        public String call() {
+            String authUrl = "";
                 try {
-
-                    //FIX ACCESSING URL OUT OF THREAD
                     authUrl = provider.retrieveRequestToken(consumer, "");
-
                     System.out.println("Request token: " + consumer.getToken());
                     System.out.println("Token secret: " + consumer.getTokenSecret());
-
-                    //Get the authorization Url
-                    //String authUrl = getAuthorizationUrl();
-                    //Log.i("Authorize", "Loading Auth Url : " + authUrl);
-
-
                 } catch (OAuthMessageSignerException e) {
                     e.printStackTrace();
                 } catch (OAuthNotAuthorizedException e) {
@@ -167,12 +251,8 @@ public class SplitwiseActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-
-            }
-
-        };
-        oauth.start();
-        return authUrl;
+            return authUrl;
+        }
     }
 
     private void getAccessToken(final CommonsHttpOAuthConsumer consumer, final CommonsHttpOAuthProvider provider) {
@@ -183,6 +263,17 @@ public class SplitwiseActivity extends AppCompatActivity {
                 // fetches a request token from the service provider and builds
                 // a url based on AUTHORIZE_WEBSITE_URL and CALLBACK_URL to
                 // which your app must now send the user
+                HttpParameters additionalParameters = new HttpParameters();
+                additionalParameters.put("oauth_consumer_key", CONSUMER_KEY);
+                additionalParameters.put("oauth_nonce", "oVnT0q6VBYeYD2wAXuZww1N8Hk7qSJi8uU1szIrOAvA");
+                additionalParameters.put("oauth_signature", "V9w9%2Bwu0xTQlfRJvsBOskzATlNg%3D");
+                additionalParameters.put("oauth_signature_method", "HMAC-SHA1");
+                additionalParameters.put("oauth_timestamp", "1324583427");
+                additionalParameters.put("oauth_token", consumer.getToken());
+                // httpost.setHeader("oauth_verifier","SDIWHQ05FYpDtz0og13C");
+                additionalParameters.put("oauth_version","1.0");
+                consumer.setAdditionalParameters(additionalParameters);
+
                 try {
                     provider.retrieveAccessToken(consumer, null);
                     Log.i("Got Token!", "Access Token " + consumer.getToken());
@@ -203,13 +294,5 @@ public class SplitwiseActivity extends AppCompatActivity {
         oauth.start();
     }
 
-
-    private static String getAuthorizationUrl() {
-        return AUTHORIZATION_URL
-                + QUESTION_MARK + RESPONSE_TYPE_PARAM + EQUALS + RESPONSE_TYPE_VALUE
-                + AMPERSAND + CLIENT_ID_PARAM + EQUALS + API_KEY
-                + AMPERSAND + STATE_PARAM + EQUALS + STATE
-                + AMPERSAND + REDIRECT_URI_PARAM + EQUALS + REDIRECT_URI;
-    }
 
 }
