@@ -78,9 +78,10 @@ public class TasksActivity extends AppCompatActivity
             // Retrieve new posts as they are added to the database
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
-                String s = (String)snapshot.child("description").getValue();
-
-                Task  task = new Task(s, 0, previousChildKey);
+                String desc = (String)snapshot.child("description").getValue();
+                String status = (String)snapshot.child("status").getValue();
+                //Integer.parseInt(status)
+                Task  task = new Task(desc, 0 , previousChildKey);
 
                 adapt.add(task);
                 adapt.notifyDataSetChanged();
@@ -113,10 +114,11 @@ public class TasksActivity extends AppCompatActivity
             Toast.makeText(this, "Empty task not added", Toast.LENGTH_SHORT);
         }
         else {
-            Map<String, String> fbTask = new HashMap<String, String>();
-            fbTask.put("description", s);
+            Map<String, String> firebaseTask = new HashMap<String, String>();
+            firebaseTask.put("description", s);
+            firebaseTask.put("status", "0");
             Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-            ref.child("groups").child(group).child("tasks").push().setValue(fbTask);
+            ref.child("groups").child(group).child("tasks").push().setValue(firebaseTask);
             t.setText("");
         }
     }
@@ -182,6 +184,7 @@ public class TasksActivity extends AppCompatActivity
 
         if (id == R.id.nav_home){
             Intent i = new Intent(TasksActivity.this, MainActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
         else if(id == R.id.nav_calendar) {
@@ -191,6 +194,7 @@ public class TasksActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_tasks) {
             Intent i = new Intent(TasksActivity.this, TasksActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
@@ -244,6 +248,9 @@ public class TasksActivity extends AppCompatActivity
                         CheckBox cb = (CheckBox) v;
                         Task changeTask = (Task) cb.getTag();
                         changeTask.changeStatus();
+                        Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+                        ref = ref.child("groups").child(group).child("tasks").child(changeTask.getId()).child("status");
+                        ref.setValue(Integer.toString(changeTask.getStatus()));
                     }
                 });
             } else {
