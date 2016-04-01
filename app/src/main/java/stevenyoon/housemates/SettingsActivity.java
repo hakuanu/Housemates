@@ -72,11 +72,14 @@ public class SettingsActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_calendar) {
+        if (id == R.id.nav_home){
+            Intent i = new Intent(SettingsActivity.this, MainActivity.class);
+            startActivity(i);
+        }
+        else if(id == R.id.nav_calendar) {
             // Handle the camera action
         }
         else if (id == R.id.nav_tasks) {
-            System.out.println("whyyy");
             Intent i = new Intent(SettingsActivity.this, TasksActivity.class);
             startActivity(i);
         }
