@@ -51,6 +51,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/listedEvents"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_above="@+id/addEventButton" />
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
