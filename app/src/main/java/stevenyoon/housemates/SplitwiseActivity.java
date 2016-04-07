@@ -29,24 +29,38 @@ import com.google.api.client.http.GenericUrl;
 //import com.google.api.client.http.HttpTransport;
 //import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
+import com.google.gdata.util.common.base.PercentEscaper;
 
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.ParseException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -60,11 +74,16 @@ import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
+import oauth.signpost.commonshttp.HttpRequestAdapter;
+import oauth.signpost.commonshttp.HttpResponseAdapter;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 import oauth.signpost.http.HttpParameters;
+import oauth.signpost.http.HttpRequest;
+import oauth.signpost.signature.AuthorizationHeaderSigningStrategy;
+import oauth.signpost.signature.SigningStrategy;
 
 public class SplitwiseActivity extends AppCompatActivity {
 
@@ -104,6 +123,11 @@ public class SplitwiseActivity extends AppCompatActivity {
     private static final String ACCESS_TOKEN_ENDPOINT_URL = "https://secure.splitwise.com/api/v3.0/get_access_token";
     private static final String AUTHORIZE_WEBSITE_URL = "https://secure.splitwise.com/authorize";
     private static final String CALLBACK_URL = null;
+    private static final String OAUTH_NONCE = "oVnT0q6VBYeYD2wAXuZww1N8Hk7qSJi8uU1szIrOAvA";
+    private static final String oauth_signature = "V9w9%2Bwu0xTQlfRJvsBOskzATlNg%3D";
+    private static final String oauth_signature_method = "HMAC-SHA1";
+    private static final String oauth_timestamp= "1324583427";
+    private static final String oauth_version="1.0";
 
     private static final String QUESTION_MARK = "?";
     private static final String AMPERSAND = "&";
@@ -158,7 +182,15 @@ public class SplitwiseActivity extends AppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String authorizationUrl) {
                     //We make the request in a AsyncTask
-                new PostRequestAsyncTask().execute(consumer.getToken());
+                System.out.println("Now visit:\n" + authorizationUrl + "\n... and grant this app authorization");
+                webView.loadUrl(authorizationUrl);
+                Uri uri = Uri.parse(authorizationUrl);
+                if (uri != null && uri.toString().contains("oauth_verifier")) {
+                    // oAuth verifier
+                    String verifier = uri.getQueryParameter("oauth_verifier");
+                    System.out.println("Verifier is " + verifier);
+                    new PostRequestAsyncTask().execute(verifier);
+                }
                 return true;
 
                 /*if (authorizationUrl.startsWith(REDIRECT_URI)) {
@@ -182,17 +214,14 @@ public class SplitwiseActivity extends AppCompatActivity {
 
         try {
             String authUrl = task.get();
-            Log.i("Authorize", "Loading Auth Url : " + authUrl);
             //Load the authorization URL into the webView
             webView.loadUrl(authUrl);
+            Log.i("Authorize", "Loading Auth Url : " + authUrl);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-
-        //Show a progress dialog to the user
-        //pd = ProgressDialog.show(this, "", "loading", true);
     }
 
     private class PostRequestAsyncTask extends AsyncTask<String, Void, Boolean> {
@@ -204,8 +233,50 @@ public class SplitwiseActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... urls) {
-            getAccessToken(consumer, provider);
+            getAccessToken(consumer, provider, urls[0]);
+            //String authUrl = ACCESS_TOKEN_URL;
+            /*authUrl = OAuth.addQueryParameters(authUrl, OAuth.OAUTH_CONSUMER_KEY, CONSUMER_KEY,
+                    OAuth.OAUTH_NONCE, OAUTH_NONCE, OAuth.OAUTH_SIGNATURE, oauth_signature,
+                    OAuth.OAUTH_SIGNATURE_METHOD, oauth_signature_method, OAuth.OAUTH_TIMESTAMP,
+                    oauth_timestamp, OAuth.OAUTH_TOKEN, consumer.getToken(),OAuth.OAUTH_VERIFIER, consumer.getTokenSecret(),
+                    OAuth.OAUTH_VERSION, oauth_version); */
+
+           /* HttpClient httpClient = new DefaultHttpClient();
+            HttpPost request = new HttpPost(authUrl);
+
+            HttpConnectionParams.setSoTimeout(request.getParams(), 10000);
+            HttpConnectionParams.setConnectionTimeout(request.getParams(), 10000); // Timeout
+
+            request.setHeader("oauth_consumer_key", CONSUMER_KEY);
+            request.setHeader("oauth_nonce", "oVnT0q6VBYeYD2wAXuZww1N8Hk7qSJi8uU1szIrOAvA");
+            request.setHeader("oauth_signature", "V9w9%2Bwu0xTQlfRJvsBOskzATlNg%3D");
+            request.setHeader("oauth_signature_method", "HMAC-SHA1");
+            request.setHeader("oauth_timestamp", "1324583427");
+            request.setHeader("oauth_token", consumer.getToken());
+            request.setHeader("oauth_verifier", consumer.getTokenSecret());
+            request.setHeader("oauth_version", "1.0");
+            Log.i("Authorize", "Loading Auth Url : " + request.getURI().toASCIIString());
+            HttpRequest send = new HttpRequestAdapter(request);
+            try {
+                //oauth.signpost.http.HttpResponse response = new HttpResponseAdapter(httpClient.execute((HttpUriRequest)send.unwrap()));
+                HttpResponse response = httpClient.execute(request);
+
+                String responseString = new BasicResponseHandler().handleResponse(response);
+                System.out.println(responseString);
+
+               // HttpParameters responseParams = OAuth.decodeForm(response.getContent());
+                String token = responseParams.getFirst("oauth_token");
+                String secret = responseParams.getFirst("oauth_token_secret");
+                System.out.println("Access token: " + token);
+                System.out.println("Token secret: " + secret);
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } */
+
             return true;
+
+
         }
 
         @Override
@@ -213,18 +284,26 @@ public class SplitwiseActivity extends AppCompatActivity {
             if(status){
                 //If everything went Ok, change to another activity.
                 Log.v("Debugging", "worked!");
-                Intent startProfileActivity = new Intent(SplitwiseActivity.this, MainActivity.class);
+                System.out.println("Access token: " + consumer.getToken());
+                System.out.println("Token secret: " + consumer.getTokenSecret());
+                Intent startProfileActivity = new Intent(SplitwiseActivity.this, PaymentsActivity.class);
                 SplitwiseActivity.this.startActivity(startProfileActivity);
             }
             else{
                 Log.v("Debugging", "request was null");
-                Intent startProfileActivity = new Intent(SplitwiseActivity.this, MainActivity.class);
+                System.out.println("Access token: " + consumer.getToken());
+                System.out.println("Token secret: " + consumer.getTokenSecret());
+                Intent startProfileActivity = new Intent(SplitwiseActivity.this, PaymentsActivity.class);
                 SplitwiseActivity.this.startActivity(startProfileActivity);
             }
         }
 
     }
 
+
+    public static boolean isEmpty(String str) {
+        return str == null || str.length() == 0;
+    }
 
     private class RequestToken implements Callable<String> {
         private CommonsHttpOAuthConsumer consumer;
@@ -238,9 +317,13 @@ public class SplitwiseActivity extends AppCompatActivity {
         public String call() {
             String authUrl = "";
                 try {
-                    authUrl = provider.retrieveRequestToken(consumer, "");
+                    authUrl = provider.retrieveRequestToken(consumer, AUTHORIZATION_URL);
                     System.out.println("Request token: " + consumer.getToken());
                     System.out.println("Token secret: " + consumer.getTokenSecret());
+                    /*authUrl = OAuth.addQueryParameters(authUrl, OAuth.OAUTH_CONSUMER_KEY, CONSUMER_KEY,
+                            OAuth.OAUTH_NONCE, OAUTH_NONCE, OAuth.OAUTH_SIGNATURE, oauth_signature,
+                            OAuth.OAUTH_SIGNATURE_METHOD, oauth_signature_method,OAuth.OAUTH_VERIFIER, consumer.getTokenSecret(),
+                            OAuth.OAUTH_TIMESTAMP, oauth_timestamp, OAuth.OAUTH_VERSION, oauth_version); */
                 } catch (OAuthMessageSignerException e) {
                     e.printStackTrace();
                 } catch (OAuthNotAuthorizedException e) {
@@ -255,29 +338,34 @@ public class SplitwiseActivity extends AppCompatActivity {
         }
     }
 
-    private void getAccessToken(final CommonsHttpOAuthConsumer consumer, final CommonsHttpOAuthProvider provider) {
+    private void getAccessToken(final CommonsHttpOAuthConsumer consumer, final CommonsHttpOAuthProvider provider, final String verifier) {
 
         Thread oauth = new Thread() {
             @Override
             public void run() {
-                // fetches a request token from the service provider and builds
-                // a url based on AUTHORIZE_WEBSITE_URL and CALLBACK_URL to
-                // which your app must now send the user
-                HttpParameters additionalParameters = new HttpParameters();
-                additionalParameters.put("oauth_consumer_key", CONSUMER_KEY);
-                additionalParameters.put("oauth_nonce", "oVnT0q6VBYeYD2wAXuZww1N8Hk7qSJi8uU1szIrOAvA");
-                additionalParameters.put("oauth_signature", "V9w9%2Bwu0xTQlfRJvsBOskzATlNg%3D");
-                additionalParameters.put("oauth_signature_method", "HMAC-SHA1");
-                additionalParameters.put("oauth_timestamp", "1324583427");
-                additionalParameters.put("oauth_token", consumer.getToken());
-                // httpost.setHeader("oauth_verifier","SDIWHQ05FYpDtz0og13C");
-                additionalParameters.put("oauth_version","1.0");
-                consumer.setAdditionalParameters(additionalParameters);
 
                 try {
-                    provider.retrieveAccessToken(consumer, null);
+                    provider.retrieveAccessToken(consumer, verifier);
                     Log.i("Got Token!", "Access Token " + consumer.getToken());
                     Log.i("Got Token!", "Access Secret " + consumer.getTokenSecret());
+
+                    HttpPost request = new HttpPost("https://secure.splitwise.com/api/v3.0/test");
+                    consumer.sign(request);
+
+                    System.out.println("Sending  request to Spltiwise...");
+
+                    HttpClient httpClient = new DefaultHttpClient();
+                    HttpResponse response = null;
+                    try {
+                        response = httpClient.execute(request);
+
+                    String msg = EntityUtils.toString(response.getEntity(), "UTF-8");
+                    System.out.println("Response: " + response.getStatusLine().getStatusCode() + " "
+                            + response.getStatusLine().getReasonPhrase());
+                    System.out.println(msg.toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
                 } catch (OAuthMessageSignerException e) {
                     e.printStackTrace();
