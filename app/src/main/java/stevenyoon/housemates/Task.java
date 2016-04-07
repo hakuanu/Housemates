@@ -6,24 +6,30 @@ package stevenyoon.housemates;
 public class Task {
     private String description;
     private int status;
-    private int id;
+    private String id;
 
     public Task() {
         this.description = null;
         this.status = 0;
     }
 
+    public Task(String description, int status, String id) {
+        super();
+        this.description = description;
+        this.status = status;
+        this.id = id;
+    }
     public Task(String description, int status) {
         super();
         this.description = description;
         this.status = status;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
