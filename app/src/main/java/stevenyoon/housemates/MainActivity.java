@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity
             chk.setText(current.getDescription());
             chk.setChecked(current.getStatus() == 1 ? true : false);
             chk.setTag(current);
-            Log.d("listener", String.valueOf(current.getId()));
+            //Log.d("listener", String.valueOf(current.getId()));
             return convertView;
         }
     }

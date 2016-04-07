@@ -33,24 +33,25 @@
         <activity
             android:name=".SettingsActivity"
             android:label="SettingsActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".TasksActivity"
             android:label="@string/title_activity_tasks"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".CalendarActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".CalendarActivity" />
         <activity
             android:name=".GroupLoginActivity"
             android:label="GroupLoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CreateGroupActivity"
             android:label="CreateGroupActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SplitwiseActivity"
             android:label="@string/title_activity_payment"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".PaymentsActivity"></activity>
     </application>
 
 </manifest>
