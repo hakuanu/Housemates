@@ -137,91 +137,75 @@ public class SplitwiseActivity extends AppCompatActivity {
     private CommonsHttpOAuthConsumer consumer;
     private CommonsHttpOAuthProvider provider;
     private WebView webView;
+    private int count;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splitwise);
-        //get the webView from the layout
-        webView = (WebView) findViewById(R.id.splitwise_activity_web_view);
+            //get the webView from the layout
+            webView = (WebView) findViewById(R.id.splitwise_activity_web_view);
 
-        //Request focus for the webview
-        webView.requestFocus(View.FOCUS_DOWN);
-        //Show a progress dialog to the user
-        pd = ProgressDialog.show(this, "", "loading",true);
+            //Request focus for the webview
+            webView.requestFocus(View.FOCUS_DOWN);
+            //Show a progress dialog to the user
+            pd = ProgressDialog.show(this, "", "loading", true);
 
-        // create a consumer object and configure it with the access
-        consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
+            // create a consumer object and configure it with the access
+            consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
 
-        // create a new service provider object and configure it with
-        // the URLs which provide request tokens, access tokens, and
-        // the URL to which users are sent in order to grant permission
-        // to your application to access protected resources
-        provider = new CommonsHttpOAuthProvider(
-                REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
-                AUTHORIZE_WEBSITE_URL);
-        //RequestToken requestToken = new RequestToken(consumer, provider);
-        //authUrl = getRequestToken(consumer, provider);
+            // create a new service provider object and configure it with
+            // the URLs which provide request tokens, access tokens, and
+            // the URL to which users are sent in order to grant permission
+            // to your application to access protected resources
+            provider = new CommonsHttpOAuthProvider(
+                    REQUEST_TOKEN_ENDPOINT_URL, ACCESS_TOKEN_ENDPOINT_URL,
+                    AUTHORIZE_WEBSITE_URL);
 
-        final ExecutorService service;
-        final Future<String> task;
+            final ExecutorService service;
+            final Future<String> task;
 
-        service = Executors.newFixedThreadPool(1);
-        task    = service.submit(new RequestToken(consumer, provider));
+            service = Executors.newFixedThreadPool(1);
+            task = service.submit(new RequestToken(consumer, provider));
 
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                //This method will be executed each time a page finished loading.
-                //The only we do is dismiss the progressDialog, in case we are showing any.
-                if (pd != null && pd.isShowing()) {
-                    pd.dismiss();
-                }
-            }
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String authorizationUrl) {
-                    //We make the request in a AsyncTask
-                System.out.println("Now visit:\n" + authorizationUrl + "\n... and grant this app authorization");
-                webView.loadUrl(authorizationUrl);
-                Uri uri = Uri.parse(authorizationUrl);
-                if (uri != null && uri.toString().contains("oauth_verifier")) {
-                    // oAuth verifier
-                    String verifier = uri.getQueryParameter("oauth_verifier");
-                    System.out.println("Verifier is " + verifier);
-                    new PostRequestAsyncTask().execute(verifier);
-                }
-                return true;
-
-                /*if (authorizationUrl.startsWith(REDIRECT_URI)) {
-                    Log.i("Run PostSyncTask", "Running Task!");
-                    try {
-                        authorizationUrl = task.get();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
+            //create new View for just AUTHENTICATION!!
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    //This method will be executed each time a page finished loading.
+                    //The only we do is dismiss the progressDialog, in case we are showing any.
+                    if (pd != null && pd.isShowing()) {
+                        pd.dismiss();
                     }
-                    new PostRequestAsyncTask().execute(consumer.getToken());
                 }
-                else {
-                    Log.i("Authorize", "Redirecting to: " + authorizationUrl);
-                    webView.loadUrl(authorizationUrl);
-                }
-                return true; */
-            }
-        });
 
-        try {
-            String authUrl = task.get();
-            //Load the authorization URL into the webView
-            webView.loadUrl(authUrl);
-            Log.i("Authorize", "Loading Auth Url : " + authUrl);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String authorizationUrl) {
+                    //We make the request in a AsyncTask
+                    System.out.println("Now visit:\n" + authorizationUrl + "\n... and grant this app authorization");
+                    webView.loadUrl(authorizationUrl);
+                    Uri uri = Uri.parse(authorizationUrl);
+                    if (uri != null && uri.toString().contains("oauth_verifier")) {
+                        // oAuth verifier
+                        String verifier = uri.getQueryParameter("oauth_verifier");
+                        System.out.println("Verifier is " + verifier);
+                        new PostRequestAsyncTask().execute(verifier);
+                    }
+                    return true;
+                }
+            });
+
+            try {
+                String authUrl = task.get();
+                //Load the authorization URL into the webView
+                webView.loadUrl(authUrl);
+                Log.i("Authorize", "Loading Auth Url : " + authUrl);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+
     }
 
     private class PostRequestAsyncTask extends AsyncTask<String, Void, Boolean> {
@@ -234,49 +218,7 @@ public class SplitwiseActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(String... urls) {
             getAccessToken(consumer, provider, urls[0]);
-            //String authUrl = ACCESS_TOKEN_URL;
-            /*authUrl = OAuth.addQueryParameters(authUrl, OAuth.OAUTH_CONSUMER_KEY, CONSUMER_KEY,
-                    OAuth.OAUTH_NONCE, OAUTH_NONCE, OAuth.OAUTH_SIGNATURE, oauth_signature,
-                    OAuth.OAUTH_SIGNATURE_METHOD, oauth_signature_method, OAuth.OAUTH_TIMESTAMP,
-                    oauth_timestamp, OAuth.OAUTH_TOKEN, consumer.getToken(),OAuth.OAUTH_VERIFIER, consumer.getTokenSecret(),
-                    OAuth.OAUTH_VERSION, oauth_version); */
-
-           /* HttpClient httpClient = new DefaultHttpClient();
-            HttpPost request = new HttpPost(authUrl);
-
-            HttpConnectionParams.setSoTimeout(request.getParams(), 10000);
-            HttpConnectionParams.setConnectionTimeout(request.getParams(), 10000); // Timeout
-
-            request.setHeader("oauth_consumer_key", CONSUMER_KEY);
-            request.setHeader("oauth_nonce", "oVnT0q6VBYeYD2wAXuZww1N8Hk7qSJi8uU1szIrOAvA");
-            request.setHeader("oauth_signature", "V9w9%2Bwu0xTQlfRJvsBOskzATlNg%3D");
-            request.setHeader("oauth_signature_method", "HMAC-SHA1");
-            request.setHeader("oauth_timestamp", "1324583427");
-            request.setHeader("oauth_token", consumer.getToken());
-            request.setHeader("oauth_verifier", consumer.getTokenSecret());
-            request.setHeader("oauth_version", "1.0");
-            Log.i("Authorize", "Loading Auth Url : " + request.getURI().toASCIIString());
-            HttpRequest send = new HttpRequestAdapter(request);
-            try {
-                //oauth.signpost.http.HttpResponse response = new HttpResponseAdapter(httpClient.execute((HttpUriRequest)send.unwrap()));
-                HttpResponse response = httpClient.execute(request);
-
-                String responseString = new BasicResponseHandler().handleResponse(response);
-                System.out.println(responseString);
-
-               // HttpParameters responseParams = OAuth.decodeForm(response.getContent());
-                String token = responseParams.getFirst("oauth_token");
-                String secret = responseParams.getFirst("oauth_token_secret");
-                System.out.println("Access token: " + token);
-                System.out.println("Token secret: " + secret);
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            } */
-
             return true;
-
-
         }
 
         @Override
@@ -286,14 +228,12 @@ public class SplitwiseActivity extends AppCompatActivity {
                 Log.v("Debugging", "worked!");
                 System.out.println("Access token: " + consumer.getToken());
                 System.out.println("Token secret: " + consumer.getTokenSecret());
-                Intent startProfileActivity = new Intent(SplitwiseActivity.this, PaymentsActivity.class);
-                SplitwiseActivity.this.startActivity(startProfileActivity);
             }
             else{
                 Log.v("Debugging", "request was null");
                 System.out.println("Access token: " + consumer.getToken());
                 System.out.println("Token secret: " + consumer.getTokenSecret());
-                Intent startProfileActivity = new Intent(SplitwiseActivity.this, PaymentsActivity.class);
+                Intent startProfileActivity = new Intent(SplitwiseActivity.this, SplitwiseActivity.class);
                 SplitwiseActivity.this.startActivity(startProfileActivity);
             }
         }
@@ -320,10 +260,6 @@ public class SplitwiseActivity extends AppCompatActivity {
                     authUrl = provider.retrieveRequestToken(consumer, AUTHORIZATION_URL);
                     System.out.println("Request token: " + consumer.getToken());
                     System.out.println("Token secret: " + consumer.getTokenSecret());
-                    /*authUrl = OAuth.addQueryParameters(authUrl, OAuth.OAUTH_CONSUMER_KEY, CONSUMER_KEY,
-                            OAuth.OAUTH_NONCE, OAUTH_NONCE, OAuth.OAUTH_SIGNATURE, oauth_signature,
-                            OAuth.OAUTH_SIGNATURE_METHOD, oauth_signature_method,OAuth.OAUTH_VERIFIER, consumer.getTokenSecret(),
-                            OAuth.OAUTH_TIMESTAMP, oauth_timestamp, OAuth.OAUTH_VERSION, oauth_version); */
                 } catch (OAuthMessageSignerException e) {
                     e.printStackTrace();
                 } catch (OAuthNotAuthorizedException e) {
@@ -383,4 +319,38 @@ public class SplitwiseActivity extends AppCompatActivity {
     }
 
 
+    private class GetGroupsRequest extends AsyncTask<String, Void, Boolean> {
+
+        @Override
+        protected void onPreExecute(){
+        }
+
+        @Override
+        protected Boolean doInBackground(String... urls) {
+            HttpGet request = new HttpGet("https://secure.splitwise.com/api/v3.0/get_groups");
+            //consumer.sign(request);
+
+            System.out.println("Sending  request to Spltiwise...");
+
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpResponse response = null;
+            try {
+                response = httpClient.execute(request);
+
+                String msg = EntityUtils.toString(response.getEntity(), "UTF-8");
+                System.out.println("Response: " + response.getStatusLine().getStatusCode() + " "
+                        + response.getStatusLine().getReasonPhrase());
+                System.out.println(msg.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean status){
+            Log.v("Debugging", "worked!");
+        }
+
+    }
 }
