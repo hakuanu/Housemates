@@ -182,7 +182,7 @@ public class SplitwiseActivity extends AppCompatActivity {
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String authorizationUrl) {
                     //We make the request in a AsyncTask
-                    System.out.println("Now visit:\n" + authorizationUrl + "\n... and grant this app authorization");
+                    //System.out.println("Now visit:\n" + authorizationUrl + "\n... and grant this app authorization");
                     webView.loadUrl(authorizationUrl);
                     Uri uri = Uri.parse(authorizationUrl);
                     if (uri != null && uri.toString().contains("oauth_verifier")) {

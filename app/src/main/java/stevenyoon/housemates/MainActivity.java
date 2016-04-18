@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
-            Intent i = new Intent(MainActivity.this, SplitwiseActivity.class);
+            Intent i = new Intent(MainActivity.this, PaymentsActivity.class);
             startActivity(i);
         }
         else if (id == R.id.nav_settings) {
