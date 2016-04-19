@@ -41,7 +41,7 @@ public class TasksActivity extends AppCompatActivity
     private ArrayAdapter<Task> itemsAdapter;
     private ListView listItems;
     private MyAdapter adapt;
-    private  ValueEventListener vel;
+    private ValueEventListener vel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,13 +188,7 @@ public class TasksActivity extends AppCompatActivity
             startActivity(i);
         }
         else if(id == R.id.nav_calendar) {
-
             Intent i = new Intent(TasksActivity.this, CalendarActivity.class);
-            startActivity(i);
-        }
-        else if (id == R.id.nav_tasks) {
-            Intent i = new Intent(TasksActivity.this, TasksActivity.class);
-            i.putExtra("group", group);
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
@@ -203,12 +197,8 @@ public class TasksActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_settings) {
             Intent i = new Intent(TasksActivity.this, SettingsActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
-        }
-        else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_messaging) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -1,5 +1,12 @@
 package stevenyoon.housemates;
 
+
+import android.support.design.widget.NavigationView;
+
+/**
+ * Created by Mikael Mantis 3/16/16
+ */
+import java.util.Calendar;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -269,9 +276,10 @@ public class CalendarActivity extends AppCompatActivity
             startActivity(i);
         } else if (id == R.id.nav_payment) {
 
-        } else if (id == R.id.nav_settings) {
-
-        } else if (id == R.id.nav_send) {
+        }
+        else if (id == R.id.nav_settings) {
+            Intent i = new Intent(CalendarActivity.this, SettingsActivity.class);
+            startActivity(i);
 
         }
 
