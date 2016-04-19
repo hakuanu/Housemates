@@ -1,4 +1,7 @@
 package stevenyoon.housemates;
+
+import android.support.design.widget.NavigationView;
+
 /**
  * Created by Mikael Mantis 3/16/16
  */
@@ -319,9 +322,6 @@ public class CalendarActivity extends AppCompatActivity
             startActivity(i);
         }
         else if (id == R.id.nav_share) {
-
-        }
-        else if (id == R.id.nav_messaging) {
 
         }
 

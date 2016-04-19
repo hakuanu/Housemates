@@ -41,7 +41,7 @@ public class TasksActivity extends AppCompatActivity
     private ArrayAdapter<Task> itemsAdapter;
     private ListView listItems;
     private MyAdapter adapt;
-    private  ValueEventListener vel;
+    private ValueEventListener vel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,8 +206,6 @@ public class TasksActivity extends AppCompatActivity
             startActivity(i);
         }
         else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_messaging) {
 
         }
 
