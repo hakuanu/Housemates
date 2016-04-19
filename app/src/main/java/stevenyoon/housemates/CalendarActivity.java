@@ -321,9 +321,6 @@ public class CalendarActivity extends AppCompatActivity
             Intent i = new Intent(CalendarActivity.this, SettingsActivity.class);
             startActivity(i);
         }
-        else if (id == R.id.nav_share) {
-
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
