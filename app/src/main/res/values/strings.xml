@@ -43,4 +43,6 @@
     <string name="add_list">Add List</string>
     <string name="title_activity_calendar">CalendarActivity</string>
     <string name="title_activity_splitwise2">Splitwise2</string>
+    <string name="title_activity_dummy">DummyActivity</string>
+    <string name="title_activity_calendar2">CalendarActivity2</string>
 </resources>
