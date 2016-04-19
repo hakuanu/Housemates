@@ -1,18 +1,11 @@
 package stevenyoon.housemates;
 
-import android.graphics.Color;
-import android.view.View;
-import android.content.Context;
-import android.util.AttributeSet;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-
 /**
  * Created by Mikael on 3/31/16.
  */
 
 
-
+/*
 public class EventView extends View {
     public static int max_event_id = 0;
     private int event_id;
@@ -47,6 +40,6 @@ public class EventView extends View {
     /*@Override
     public void onMeasure(int w, int h) {
         super.onMeasure(w, h);
-    }*/
+    }
 
-}
+}*/

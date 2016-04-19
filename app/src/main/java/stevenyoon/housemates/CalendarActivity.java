@@ -3,35 +3,35 @@ package stevenyoon.housemates;
  * Created by Mikael Mantis 3/16/16
  */
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import stevenyoon.housemates.Event;
-import java.util.ArrayList;
-import android.app.AlertDialog.Builder;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
-import android.content.DialogInterface;
-import android.view.View;
-import android.widget.TextView;
-import android.view.LayoutInflater;
-import java.util.Date;
-import java.util.List;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
-import android.view.ViewGroup;
-import android.view.InflateException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 
 public class CalendarActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -40,7 +40,7 @@ public class CalendarActivity extends AppCompatActivity
     private ListView listItems;
     private EventAdapter adapt;
     public static ArrayList<Event> events = new ArrayList<>();
-    public static ArrayList<EventView> eventViews = new ArrayList<>();
+
     public AlertDialog.Builder eventPrompt;
     String eventName;
     String eventDate;
@@ -84,18 +84,19 @@ public class CalendarActivity extends AppCompatActivity
 
         LayoutInflater factory = LayoutInflater.from(this);
 
-        View textEventEntry = factory.inflate(R.layout.event_prompt, null, false);
+        final View textEventEntry = factory.inflate(R.layout.event_prompt, null, false);
         if (textEventEntry != null) {
             ViewGroup parent = (ViewGroup) textEventEntry.getParent();
             if (parent != null) {
                 parent.removeView(textEventEntry);
             }
         }
-        try {
+       /* try {
             textEventEntry = factory.inflate(R.layout.event_prompt, null, false);
         } catch (InflateException e) {
 
-        }
+        }*/
+        final Calendar myCalendar = Calendar.getInstance();
 
         final EditText eventNameInput = (EditText) textEventEntry.findViewById(R.id.newEventName);
         final EditText eventDateInput = (EditText) textEventEntry.findViewById(R.id.newEventDate);
@@ -106,6 +107,76 @@ public class CalendarActivity extends AppCompatActivity
         final EditText eventClubInput = (EditText) textEventEntry.findViewById(R.id.newEventClub);
         final EditText eventDetailsInput = (EditText) textEventEntry.findViewById(R.id
                 .newEventDetails);
+
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                String myFormat = "MM/dd/yy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+                eventDateInput.setText(sdf.format(myCalendar.getTime()));
+            }
+
+        };
+
+        eventDateInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(textEventEntry.getContext(), date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        final TimePickerDialog.OnTimeSetListener timeStart = new TimePickerDialog.OnTimeSetListener
+                () {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                myCalendar.set(Calendar.MINUTE, minute);
+                String myFormat = "h:mm a";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+                eventTimeStartInput.setText(sdf.format(myCalendar.getTime()));
+            }
+        };
+
+        eventTimeStartInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TimePickerDialog(textEventEntry.getContext(), timeStart, myCalendar
+                        .get(Calendar.HOUR_OF_DAY), myCalendar.get(Calendar.MINUTE),
+                        false).show();
+            }
+        });
+
+        final TimePickerDialog.OnTimeSetListener timeEnd = new TimePickerDialog.OnTimeSetListener
+                () {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                myCalendar.set(Calendar.MINUTE, minute);
+                String myFormat = "h:mm a";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+                eventTimeEndInput.setText(sdf.format(myCalendar.getTime()));
+            }
+        };
+
+        eventTimeEndInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TimePickerDialog(textEventEntry.getContext(), timeEnd, myCalendar
+                        .get(Calendar.HOUR_OF_DAY), myCalendar.get(Calendar.MINUTE),
+                        false).show();
+            }
+        });
 
         eventPrompt = new AlertDialog.Builder(this);
         eventPrompt.setTitle("Enter New Event");
@@ -143,14 +214,46 @@ public class CalendarActivity extends AppCompatActivity
 
     }
 
-    public void displayEvents() {
+  /*  public static class TimePickerFragment extends DialogFragment implements TimePickerDialog
+            .OnTimeSetListener {
 
-        System.out.println("Number of views: " + eventViews.size());
-        for (int i = 0; i < events.size(); i++) {
-            System.out.println(events.get(i).getEventName());
-            System.out.println(eventViews.get(i).getId());
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current time as the default values for the picker
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
+
+            // Create a new instance of TimePickerDialog and return it
+            return new TimePickerDialog(getActivity(), this, hour, minute,
+                    DateFormat.is24HourFormat(getActivity()));
         }
-    }
+
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            // Do something with the time chosen by the user
+
+        }
+    }*/
+
+    /*public static class DatePickerFragment extends DialogFragment implements DatePickerDialog
+            .OnDateSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current time as the default values for the picker
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
+
+            // Create a new instance of TimePickerDialog and return it
+            return new TimePickerDialog(getActivity(), this, hour, minute,
+                    DateFormat.is24HourFormat(getActivity()));
+        }
+
+        public void onDateSet(Datepicker view, int hourOfDay, int minute) {
+            // Do something with the time chosen by the user
+        }
+    }*/
 
     @Override
     public void onBackPressed() {
@@ -236,7 +339,7 @@ public class CalendarActivity extends AppCompatActivity
         List<Event> eventList = new ArrayList<Event>();
         int layoutResourceId;
         public EventAdapter(Context context, int layoutResourceId,
-                         List<Event> objects) {
+                            List<Event> objects) {
             super(context, layoutResourceId, objects);
             this.layoutResourceId = layoutResourceId;
             this.eventList = objects;

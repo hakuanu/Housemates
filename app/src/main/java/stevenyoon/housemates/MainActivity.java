@@ -10,7 +10,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -142,6 +141,7 @@ public class MainActivity extends AppCompatActivity
         else if(id == R.id.nav_calendar) {
 
             Intent i = new Intent(MainActivity.this, CalendarActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
         else if (id == R.id.nav_tasks) {
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
-            Intent i = new Intent(MainActivity.this, SplitwiseActivity.class);
+            Intent i = new Intent(MainActivity.this, PaymentsActivity.class);
             startActivity(i);
         }
         else if (id == R.id.nav_settings) {
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity
             chk.setText(current.getDescription());
             chk.setChecked(current.getStatus() == 1 ? true : false);
             chk.setTag(current);
-            Log.d("listener", String.valueOf(current.getId()));
+            //Log.d("listener", String.valueOf(current.getId()));
             return convertView;
         }
     }
