@@ -16,11 +16,13 @@ import android.view.MenuItem;
 
 public class SettingsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private String group;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        group = getIntent().getStringExtra("group");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -74,23 +76,20 @@ public class SettingsActivity extends AppCompatActivity
 
         if (id == R.id.nav_home){
             Intent i = new Intent(SettingsActivity.this, MainActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
         else if(id == R.id.nav_calendar) {
-
             Intent i = new Intent(SettingsActivity.this, CalendarActivity.class);
             startActivity(i);
         }
         else if (id == R.id.nav_tasks) {
             Intent i = new Intent(SettingsActivity.this, TasksActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
             Intent i = new Intent(SettingsActivity.this, SplitwiseActivity.class);
-            startActivity(i);
-        }
-        else if (id == R.id.nav_settings) {
-            Intent i = new Intent(SettingsActivity.this, SettingsActivity.class);
             startActivity(i);
         }
 

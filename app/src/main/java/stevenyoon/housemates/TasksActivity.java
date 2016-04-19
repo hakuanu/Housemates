@@ -188,13 +188,7 @@ public class TasksActivity extends AppCompatActivity
             startActivity(i);
         }
         else if(id == R.id.nav_calendar) {
-
             Intent i = new Intent(TasksActivity.this, CalendarActivity.class);
-            startActivity(i);
-        }
-        else if (id == R.id.nav_tasks) {
-            Intent i = new Intent(TasksActivity.this, TasksActivity.class);
-            i.putExtra("group", group);
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
@@ -203,6 +197,7 @@ public class TasksActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_settings) {
             Intent i = new Intent(TasksActivity.this, SettingsActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
 
