@@ -37,8 +37,12 @@
         <activity
             android:name=".TasksActivity"
             android:label="@string/title_activity_tasks"
+<<<<<<< HEAD
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".CalendarActivity" />
+=======
+            android:theme="@style/AppTheme.NoActionBar"/>
+>>>>>>> 538c695a03b2106b97e505c61eea7f86bce6b39c
         <activity
             android:name=".GroupLoginActivity"
             android:label="GroupLoginActivity"
@@ -50,9 +54,19 @@
         <activity
             android:name=".SplitwiseActivity"
             android:label="@string/title_activity_payment"
+<<<<<<< HEAD
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".PaymentsActivity" />
         <activity android:name=".PaymentsActionsActivity"></activity>
+=======
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".PaymentsActivity"/>
+        <activity
+            android:name=".CalendarActivity"
+            android:label="@string/title_activity_calendar2"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+>>>>>>> 538c695a03b2106b97e505c61eea7f86bce6b39c
     </application>
 
 </manifest>

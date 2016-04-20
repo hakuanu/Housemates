@@ -10,7 +10,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -135,12 +134,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_home){
-            Intent i = new Intent(MainActivity.this, MainActivity.class);
-            startActivity(i);
-        }
-        else if(id == R.id.nav_calendar) {
-
+        if(id == R.id.nav_calendar) {
             Intent i = new Intent(MainActivity.this, CalendarActivity.class);
             startActivity(i);
         }
@@ -157,12 +151,6 @@ public class MainActivity extends AppCompatActivity
             Intent i = new Intent(MainActivity.this, SettingsActivity.class);
             i.putExtra("group", group);
             startActivity(i);
-        }
-        else if (id == R.id.nav_share) {
-
-        }
-        else if (id == R.id.nav_messaging) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
