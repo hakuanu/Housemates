@@ -122,9 +122,9 @@ public class PaymentsActivity extends AppCompatActivity {
                                     PaymentsActivity.this.setResult(Activity.RESULT_OK, resultIntent);
                                     setResult(Activity.RESULT_CANCELED, resultIntent);
                                     auth_dialog.dismiss();
-
                                     new AuthorizeToken().execute(verifier);
-                                    Toast.makeText(getApplicationContext(),"Authorization Code is: " +authCode, Toast.LENGTH_SHORT).show();
+
+                                    //Toast.makeText(getApplicationContext(),"Authorization Code is: " +authCode, Toast.LENGTH_SHORT).show();
                                 } else if(url.contains("error=access_denied")){
                                     Log.i("", "ACCESS_DENIED_HERE");
                                     resultIntent.putExtra("code", authCode);
@@ -182,6 +182,7 @@ public class PaymentsActivity extends AppCompatActivity {
             pd.setIndeterminate(false);
             pd.setCancelable(true);
             pd.show();
+
         }
 
         @Override
@@ -192,8 +193,6 @@ public class PaymentsActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Boolean status){
-            Log.i("Confirm Token", "Access Token " + consumer.getToken());
-            Log.i("Confirm Token", "Access Secret " + consumer.getTokenSecret());
             pd.dismiss();
         }
 
@@ -224,6 +223,12 @@ public class PaymentsActivity extends AppCompatActivity {
                         System.out.println("Response: " + response.getStatusLine().getStatusCode() + " "
                                 + response.getStatusLine().getReasonPhrase());
                         System.out.println(msg.toString());
+                        Intent i = new Intent(PaymentsActivity.this, PaymentsActionsActivity.class);
+                        i.putExtra("access_token", consumer.getToken());
+                        i.putExtra("access_secret", consumer.getTokenSecret());
+                        System.out.println("Passing Token " + consumer.getToken());
+                        System.out.println("Passing Secret " + consumer.getTokenSecret());
+                        startActivity(i);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
