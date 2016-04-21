@@ -16,11 +16,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
+    <include
+        layout="@layout/app_bar_calendar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:tools="http://schemas.android.com/tools"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_below="@+id/drawer_layout"
+                    android:layout_marginTop="60dp"
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     tools:context=".CalendarActivity"
                     tools:openDrawer="start">
@@ -31,26 +40,21 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_above="@+id/addEventButton" />
+            android:layout_above="@+id/addEventButton"
+            />
 
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Add Event"
             android:id="@+id/addEventButton"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:onClick="addEvent" />
-
-        <include
-            layout="@layout/app_bar_calendar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_centerVertical="true"
+            android:onClick="addEvent"/>
     </RelativeLayout>
 
-
+</LinearLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

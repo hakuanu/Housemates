@@ -3,7 +3,6 @@ package stevenyoon.housemates;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -61,39 +61,44 @@ public class MainActivity extends AppCompatActivity
         listItems.setAdapter(adapt); //itemsAdapter
         tasks = 0;
         loadTasksFromDB();
-        final Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                ref.removeEventListener(vel);
-            }
-        }, 500);
     }
 
     private void loadTasksFromDB(){
         Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-        vel = new ValueEventListener() {
+        ref = ref.child("groups").child(group).child("tasks");
+        ref.addChildEventListener(new ChildEventListener() {
+            // Retrieve new posts as they are added to the database
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.child("groups").child(group).hasChild("tasks")) {
-                    for (DataSnapshot child : snapshot.child("groups").child(group).child("tasks").getChildren()) {
-                        String s = (String)child.child("description").getValue();
-                        Task task = new Task(s, 0);
-                        if(tasks < 5) {
-                            adapt.add(task);
-                            adapt.notifyDataSetChanged();
-                        }
-                        tasks ++;
-                    }
-                }
+            public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
+                String desc = (String) snapshot.child("description").getValue();
+                String status = (String) snapshot.child("status").getValue();
+                Task task = new Task(desc, Integer.parseInt(status), snapshot.getKey());
+
+                adapt.add(task);
+                adapt.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
-        };
-        ref.addValueEventListener(vel);
+
+            @Override
+            public void onChildRemoved(DataSnapshot snapshot) {
+                System.out.println("The read failed: ");
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                System.out.println("The read failed: ");
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
+                System.out.println("The read failed: ");
+            }
+
+        });
     }
 
     @Override

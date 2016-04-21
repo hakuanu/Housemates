@@ -81,8 +81,7 @@ public class TasksActivity extends AppCompatActivity
             public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
                 String desc = (String)snapshot.child("description").getValue();
                 String status = (String)snapshot.child("status").getValue();
-                //Integer.parseInt(status)
-                Task  task = new Task(desc, 0 , previousChildKey);
+                Task  task = new Task(desc, Integer.parseInt(status) , snapshot.getKey());
 
                 adapt.add(task);
                 adapt.notifyDataSetChanged();
