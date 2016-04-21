@@ -27,7 +27,14 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context=".TasksActivity"
         tools:openDrawer="start">
-
+        <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:textColor="#00FF00"
+        android:typeface="monospace"
+        android:id="@+id/tasks_title"
+        android:text="Tasks"
+        />
         <ListView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,7 +42,8 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_above="@+id/addButton" />
+            android:layout_below = "@+id/tasks_title"
+           />
 
 
 
