@@ -39,7 +39,6 @@
             android:name=".TasksActivity"
             android:label="@string/title_activity_tasks"
             android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".CalendarActivity"/>
         <activity
             android:name=".GroupLoginActivity"
             android:label="GroupLoginActivity"
@@ -51,7 +50,7 @@
         <activity
             android:name=".SplitwiseActivity"
             android:label="@string/title_activity_payment"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name="com.facebook.FacebookActivity"
             android:configChanges=
                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -59,6 +58,13 @@
             android:label="@string/app_name" />
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
         <activity android:name=".PaymentsActivity"/>
+
+        <activity android:name=".PaymentsActionsActivity"/>
+        <activity
+            android:name=".CalendarActivity"
+            android:label="@string/title_activity_calendar2"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

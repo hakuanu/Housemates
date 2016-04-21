@@ -11,14 +11,49 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.BearerToken;
+import com.google.api.client.auth.oauth2.CredentialStore;
+import com.google.api.client.auth.oauth2.TokenResponse;
+import com.google.api.client.http.BasicAuthentication;
+import com.google.api.client.http.GenericUrl;
+//import com.google.api.client.http.HttpRequestFactory;
+//import com.google.api.client.http.HttpResponse;
+//import com.google.api.client.http.HttpTransport;
+//import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.gdata.util.common.base.PercentEscaper;
+
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.ParseException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpProtocolParams;
+
 import org.apache.http.util.EntityUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.Calendar;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -27,15 +62,18 @@ import java.util.concurrent.Future;
 
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
+import oauth.signpost.commonshttp.HttpRequestAdapter;
+import oauth.signpost.commonshttp.HttpResponseAdapter;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 
-//import com.google.api.client.http.HttpRequestFactory;
-//import com.google.api.client.http.HttpResponse;
-//import com.google.api.client.http.HttpTransport;
-//import com.google.api.client.http.javanet.NetHttpTransport;
+import oauth.signpost.http.HttpParameters;
+import oauth.signpost.http.HttpRequest;
+import oauth.signpost.signature.AuthorizationHeaderSigningStrategy;
+import oauth.signpost.signature.SigningStrategy;
+
 
 public class SplitwiseActivity extends AppCompatActivity {
 
