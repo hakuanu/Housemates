@@ -306,15 +306,9 @@ public class CalendarActivity extends AppCompatActivity
             Intent i = new Intent(CalendarActivity.this, TasksActivity.class);
             i.putExtra("group", group);
             startActivity(i);
-<<<<<<< HEAD
-        }
-        else if (id == R.id.nav_payment) {
-            Intent i = new Intent(CalendarActivity.this, PaymentsActivity.class);
-=======
         } else if (id == R.id.nav_payment) {
             Intent i = new Intent(CalendarActivity.this, PaymentsActivity.class);
             i.putExtra("group", group);
->>>>>>> b1b6f165f8e8d0ef15fc3fde133863e2e0a5b070
             startActivity(i);
         }
         else if (id == R.id.nav_settings) {
