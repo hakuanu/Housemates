@@ -36,7 +36,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_toLeftOf="@+id/addButton"
                 android:layout_toStartOf="@+id/addButton"
-                android:inputType="number"/>
+                android:inputType="numberDecimal"/>
 
             <EditText
                 android:layout_width="wrap_content"

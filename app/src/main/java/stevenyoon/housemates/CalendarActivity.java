@@ -28,12 +28,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by Mikael Mantis 3/16/16
@@ -64,7 +71,7 @@ public class CalendarActivity extends AppCompatActivity
         group = getIntent().getStringExtra("group");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        Firebase.setAndroidContext(this);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -79,8 +86,44 @@ public class CalendarActivity extends AppCompatActivity
         adapt = new EventAdapter(this, R.layout.event_list_inner_view, list);
         listItems.setAdapter(adapt);
         setupListViewListener();
+        loadEventsFromDB();
     }
+    private void loadEventsFromDB(){
+        Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+        ref = ref.child("groups").child(group).child("events");
+        ref.addChildEventListener(new ChildEventListener() {
+            // Retrieve new posts as they are added to the database
+            @Override
+            public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
+                String eventDate = (String)snapshot.child("event_date").getValue();
+                String eventTimeS = (String)snapshot.child("event_time_start").getValue();
+                String eventTimeE = (String)snapshot.child("event_time_end").getValue();
+                String eventClub = (String)snapshot.child("event_club").getValue();
+                String eventName = (String)snapshot.child("event_name").getValue();
+                String eventDetails = (String)snapshot.child("event_details").getValue();
+                Event event = new Event(eventDate, eventTimeS, eventTimeE, eventName, eventClub, eventDetails, snapshot.getKey());
+                adapt.add(event);
+                adapt.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+            @Override
+            public void onChildRemoved(DataSnapshot snapshot) {
+                System.out.println("The read failed: ");
+            }
+            @Override
+            public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
+                System.out.println("The read failed: ");
+            }
+            @Override
+            public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
+                System.out.println("The read failed: ");
+            }
 
+        });
+    }
     public void addEvent(View v) {
 
         //if (prompt!=null);
@@ -196,12 +239,16 @@ public class CalendarActivity extends AppCompatActivity
                 eventTimeE = eventTimeEndInput.getText().toString();
                 eventClub = eventClubInput.getText().toString();
                 eventDetails = eventDetailsInput.getText().toString();
-                events.add(new Event(eventDate, eventTimeS, eventTimeE, eventName, eventClub,
-                        eventDetails));
+                Map<String, String> firebaseEvent = new HashMap<String, String>();
+                firebaseEvent.put("event_date", eventDate);
+                firebaseEvent.put("event_name", eventName);
+                firebaseEvent.put("event_time_start", eventTimeS);
+                firebaseEvent.put("event_time_end", eventTimeE);
+                firebaseEvent.put("event_club", eventClub);
+                firebaseEvent.put("event_details", eventDetails);
 
-                // displayEvents();
-                adapt.add(events.get(Event.max_event_id - 1));
-                adapt.notifyDataSetChanged();
+                Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+                ref.child("groups").child(group).child("events").push().setValue(firebaseEvent);
 
             }
         });
@@ -281,9 +328,13 @@ public class CalendarActivity extends AppCompatActivity
                     public boolean onItemLongClick(AdapterView<?> adapter,
                                                    View item, int pos, long id) {
                         // Remove the item within array at position
+                        Event e= list.get(pos);
+                        Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+                        ref=ref.child("groups").child(group).child("events").child(e.getId());
+                        ref.removeValue();
                         list.remove(pos);
-                        // Refresh the adapter
                         adapt.notifyDataSetChanged();
+                        // Refresh the adapter
                         // Return true consumes the long click event (marks it handled)
                         return true;
                     }

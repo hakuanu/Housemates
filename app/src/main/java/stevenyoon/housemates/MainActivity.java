@@ -73,9 +73,12 @@ public class MainActivity extends AppCompatActivity
                 String desc = (String) snapshot.child("description").getValue();
                 String status = (String) snapshot.child("status").getValue();
                 Task task = new Task(desc, Integer.parseInt(status), snapshot.getKey());
+                if(tasks<5){
+                    adapt.add(task);
+                    adapt.notifyDataSetChanged();
+                    tasks++;
+                }
 
-                adapt.add(task);
-                adapt.notifyDataSetChanged();
             }
 
             @Override

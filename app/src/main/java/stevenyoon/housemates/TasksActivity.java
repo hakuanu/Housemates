@@ -132,7 +132,6 @@ public class TasksActivity extends AppCompatActivity
                                                    View item, int pos, long id) {
                         // Remove the item within array at position
                         Task t = list.get(pos);
-                        t.getId();
                         Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
                         ref=ref.child("groups").child(group).child("tasks").child(t.getId());
                         ref.removeValue();
