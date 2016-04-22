@@ -26,7 +26,9 @@
         android:layout_marginTop="60dp"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context=".TasksActivity"
-        tools:openDrawer="start">
+        tools:openDrawer="start"
+        android:layout_marginBottom="10dp">
+
         <TextView
         android:layout_width="fill_parent"
         android:layout_height="100dp"
