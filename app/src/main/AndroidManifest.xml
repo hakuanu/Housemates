@@ -33,23 +33,23 @@
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".SettingsActivity"
-            android:label="SettingsActivity"
+            android:label="Settings"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".TasksActivity"
-            android:label="@string/title_activity_tasks"
+            android:label="Tasks"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".GroupLoginActivity"
-            android:label="GroupLoginActivity"
+            android:label="Group Login"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".CreateGroupActivity"
-            android:label="CreateGroupActivity"
+            android:label="Create Group"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".SplitwiseActivity"
-            android:label="@string/title_activity_payment"
+            android:label="Payment"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name="com.facebook.FacebookActivity"
             android:configChanges=
@@ -59,10 +59,12 @@
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
         <activity android:name=".PaymentsActivity"/>
 
-        <activity android:name=".PaymentsActionsActivity"/>
+        <activity android:name=".PaymentsActionsActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
         <activity
             android:name=".CalendarActivity"
-            android:label="@string/title_activity_calendar2"
+            android:label="Calendar"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>

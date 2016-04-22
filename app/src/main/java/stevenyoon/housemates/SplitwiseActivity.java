@@ -128,10 +128,12 @@ public class SplitwiseActivity extends AppCompatActivity {
     private CommonsHttpOAuthProvider provider;
     private WebView webView;
     private int count;
+    private String group;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        group = getIntent().getStringExtra("group");
         setContentView(R.layout.activity_splitwise);
             //get the webView from the layout
             webView = (WebView) findViewById(R.id.splitwise_activity_web_view);
@@ -224,6 +226,7 @@ public class SplitwiseActivity extends AppCompatActivity {
                 System.out.println("Access token: " + consumer.getToken());
                 System.out.println("Token secret: " + consumer.getTokenSecret());
                 Intent startProfileActivity = new Intent(SplitwiseActivity.this, SplitwiseActivity.class);
+                startProfileActivity.putExtra("group", group);
                 SplitwiseActivity.this.startActivity(startProfileActivity);
             }
         }
