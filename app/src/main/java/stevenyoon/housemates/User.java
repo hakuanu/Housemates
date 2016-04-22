@@ -6,14 +6,14 @@ package stevenyoon.housemates;
 public class User {
     private String name;
     private int status;
-    private String id;
+    private int id;
 
     public User() {
         this.name = null;
         this.status = 0;
     }
 
-    public User(String name, int status, String id) {
+    public User(String name, int status, int id) {
         super();
         this.name = name;
         this.status = status;
@@ -25,11 +25,11 @@ public class User {
         this.status = status;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
