@@ -111,7 +111,8 @@ public class TasksActivity extends AppCompatActivity
         String s = t.getText().toString();
 
         if(s.equalsIgnoreCase("")) {
-            Toast.makeText(this, "Empty task not added", Toast.LENGTH_SHORT);
+            Toast.makeText(this, "Empty task not added", Toast.LENGTH_SHORT).show();
+
         }
         else {
             Map<String, String> firebaseTask = new HashMap<String, String>();
