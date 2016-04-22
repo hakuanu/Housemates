@@ -276,6 +276,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
     private void loginSuccess(String uid){
         final String uid2 = uid;
+        if (mFacebookAccessTokenTracker != null) {
+            mFacebookAccessTokenTracker.stopTracking();
+        }
         Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -293,9 +296,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
-        if (mFacebookAccessTokenTracker != null) {
-            mFacebookAccessTokenTracker.stopTracking();
-        }
     }
     private void mainIntent(String groupName){
         Intent i = new Intent(this, MainActivity.class);
