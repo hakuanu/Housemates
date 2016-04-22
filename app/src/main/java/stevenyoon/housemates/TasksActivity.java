@@ -193,11 +193,11 @@ public class TasksActivity extends AppCompatActivity
             i.putExtra("group", group);
             startActivity(i);
         }
-        else if (id == R.id.nav_settings) {
+        /*else if (id == R.id.nav_settings) {
             Intent i = new Intent(TasksActivity.this, SettingsActivity.class);
             i.putExtra("group", group);
             startActivity(i);
-        }
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

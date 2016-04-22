@@ -480,13 +480,14 @@ public class PaymentsActionsActivity extends AppCompatActivity
 
         else if (id == R.id.nav_payment) {
             Intent i = new Intent(PaymentsActionsActivity.this, SplitwiseActivity.class);
-            startActivity(i);
-        }
-        else if (id == R.id.nav_settings) {
-            Intent i = new Intent(PaymentsActionsActivity.this, SettingsActivity.class);
             i.putExtra("group", group);
             startActivity(i);
         }
+        /*else if (id == R.id.nav_settings) {
+            Intent i = new Intent(PaymentsActionsActivity.this, SettingsActivity.class);
+            i.putExtra("group", group);
+            startActivity(i);
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

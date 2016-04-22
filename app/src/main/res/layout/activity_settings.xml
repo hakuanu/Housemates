@@ -17,39 +17,17 @@
         tools:context=".SettingsActivity"
         tools:openDrawer="start">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:gravity="center"
             android:layout_height="wrap_content"
-            android:text=""
-            android:paddingTop="100.0dp"
-            android:paddingLeft="50.0dp"
+            android:layout_marginTop="60dp"
+            android:textColor="#000000"
+            android:textSize="30dp"
+            android:typeface="monospace"
             android:id="@+id/groupName"
+            android:text=""
             />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/username_label"
-            android:paddingTop="100.0dp"
-            android:paddingLeft="50.0dp"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/nickname_label"
-            android:paddingTop="125.0dp"
-            android:paddingLeft="50.0dp"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/prompt_email"
-            android:paddingTop="150.0dp"
-            android:paddingLeft="50.0dp" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/date_of_birth_label"
-            android:paddingTop="175.0dp"
-            android:paddingLeft="50.0dp" />
+
 
         <include
             layout="@layout/app_bar_main"
