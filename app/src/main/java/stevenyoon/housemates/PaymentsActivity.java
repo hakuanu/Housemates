@@ -51,6 +51,7 @@ public class PaymentsActivity extends AppCompatActivity {
 
     private CommonsHttpOAuthConsumer consumer;
     private CommonsHttpOAuthProvider provider;
+    private String group;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public class PaymentsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_payments);
 
         Button auth = (Button) findViewById(R.id.auth_button);
+        group = getIntent().getStringExtra("group");
 
         consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
 
@@ -119,6 +121,7 @@ public class PaymentsActivity extends AppCompatActivity {
                                     System.out.println("Verifier is " + verifier);
                                     authComplete = true;
                                     resultIntent.putExtra("code", authCode);
+                                    resultIntent.putExtra("group", group);
                                     PaymentsActivity.this.setResult(Activity.RESULT_OK, resultIntent);
                                     setResult(Activity.RESULT_CANCELED, resultIntent);
                                     auth_dialog.dismiss();
@@ -129,6 +132,7 @@ public class PaymentsActivity extends AppCompatActivity {
                                 } else if(url.contains("error=access_denied")){
                                     Log.i("", "ACCESS_DENIED_HERE");
                                     resultIntent.putExtra("code", authCode);
+                                    resultIntent.putExtra("group", group);
                                     authComplete = true;
                                     setResult(Activity.RESULT_CANCELED, resultIntent);
                                     Toast.makeText(getApplicationContext(), "Error Occured", Toast.LENGTH_SHORT).show();
@@ -226,6 +230,7 @@ public class PaymentsActivity extends AppCompatActivity {
                         Intent i = new Intent(PaymentsActivity.this, PaymentsActionsActivity.class);
                         i.putExtra("access_token", consumer.getToken());
                         i.putExtra("access_secret", consumer.getTokenSecret());
+                        i.putExtra("group", group);
                         System.out.println("Passing Token " + consumer.getToken());
                         System.out.println("Passing Secret " + consumer.getTokenSecret());
                         startActivity(i);

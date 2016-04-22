@@ -111,7 +111,8 @@ public class TasksActivity extends AppCompatActivity
         String s = t.getText().toString();
 
         if(s.equalsIgnoreCase("")) {
-            Toast.makeText(this, "Empty task not added", Toast.LENGTH_SHORT);
+            Toast.makeText(this, "Empty task not added", Toast.LENGTH_SHORT).show();
+
         }
         else {
             Map<String, String> firebaseTask = new HashMap<String, String>();
@@ -132,9 +133,9 @@ public class TasksActivity extends AppCompatActivity
                         // Remove the item within array at position
                         Task t = list.get(pos);
                         t.getId();
-                        //Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-                        //ref=ref.child("groups").child(group).child("tasks").child(t.getId());
-                        //ref.removeValue();
+                        Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+                        ref=ref.child("groups").child(group).child("tasks").child(t.getId());
+                        ref.removeValue();
                         list.remove(pos);
                         adapt.notifyDataSetChanged();
                         // Return true consumes the long click event (marks it handled)
@@ -168,10 +169,6 @@ public class TasksActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -189,6 +186,7 @@ public class TasksActivity extends AppCompatActivity
         }
         else if(id == R.id.nav_calendar) {
             Intent i = new Intent(TasksActivity.this, CalendarActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {

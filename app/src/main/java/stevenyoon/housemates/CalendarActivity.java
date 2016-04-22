@@ -53,6 +53,7 @@ public class CalendarActivity extends AppCompatActivity
     String eventTimeE;
     String eventClub;
     String eventDetails;
+    String group;
     Date startTime;
     Date endTime;
 
@@ -60,6 +61,7 @@ public class CalendarActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar);
+        group = getIntent().getStringExtra("group");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -238,10 +240,6 @@ public class CalendarActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -252,14 +250,14 @@ public class CalendarActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_home) {
+        if (id == R.id.nav_home){
             Intent i = new Intent(CalendarActivity.this, MainActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
-        } else if (id == R.id.nav_calendar) {
-            Intent i = new Intent(CalendarActivity.this, CalendarActivity.class);
-            startActivity(i);
-        } else if (id == R.id.nav_tasks) {
+        }
+        else if (id == R.id.nav_tasks) {
             Intent i = new Intent(CalendarActivity.this, TasksActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         } else if (id == R.id.nav_payment) {
             Intent i = new Intent(CalendarActivity.this, PaymentsActivity.class);
@@ -267,8 +265,8 @@ public class CalendarActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_settings) {
             Intent i = new Intent(CalendarActivity.this, SettingsActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
