@@ -83,7 +83,7 @@ public class SettingsActivity extends AppCompatActivity
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
-            Intent i = new Intent(SettingsActivity.this, SplitwiseActivity.class);
+            Intent i = new Intent(SettingsActivity.this, PaymentsActivity.class);
             startActivity(i);
         }
 

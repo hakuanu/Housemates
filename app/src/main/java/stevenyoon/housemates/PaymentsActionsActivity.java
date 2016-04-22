@@ -449,9 +449,9 @@ public class PaymentsActionsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -472,7 +472,7 @@ public class PaymentsActionsActivity extends AppCompatActivity
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
-            Intent i = new Intent(PaymentsActionsActivity.this, SplitwiseActivity.class);
+            Intent i = new Intent(PaymentsActionsActivity.this, PaymentsActivity.class);
             startActivity(i);
         }
         else if (id == R.id.nav_settings) {
