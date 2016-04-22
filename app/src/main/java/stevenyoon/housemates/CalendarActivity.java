@@ -230,28 +230,14 @@ public class CalendarActivity extends AppCompatActivity
         eventPrompt.setTitle("Enter New Event");
 
         eventPrompt.setView(textEventEntry);
-
         eventPrompt.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                eventName = eventNameInput.getText().toString();
-                eventDate = eventDateInput.getText().toString();
-                eventTimeS = eventTimeStartInput.getText().toString();
-                eventTimeE = eventTimeEndInput.getText().toString();
-                eventClub = eventClubInput.getText().toString();
-                eventDetails = eventDetailsInput.getText().toString();
-                Map<String, String> firebaseEvent = new HashMap<String, String>();
-                firebaseEvent.put("event_date", eventDate);
-                firebaseEvent.put("event_name", eventName);
-                firebaseEvent.put("event_time_start", eventTimeS);
-                firebaseEvent.put("event_time_end", eventTimeE);
-                firebaseEvent.put("event_club", eventClub);
-                firebaseEvent.put("event_details", eventDetails);
 
-                Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-                ref.child("groups").child(group).child("events").push().setValue(firebaseEvent);
 
             }
         });
+
+
 
         eventPrompt.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -259,8 +245,68 @@ public class CalendarActivity extends AppCompatActivity
             }
         });
 
-        AlertDialog prompt = eventPrompt.create();
+        final AlertDialog prompt = eventPrompt.create();
+        prompt.setCanceledOnTouchOutside(false);
+        prompt.setCancelable(false);
         prompt.show();
+        prompt.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Boolean wantToCloseDialog = false;
+                String nameError = "Please enter an event name";
+                String dateError = "Please enter a date";
+                String sTimeError = "Please enter a start time";
+                String eTimeError = "Please enter an end time";
+
+                eventName = eventNameInput.getText().toString();
+                eventDate = eventDateInput.getText().toString();
+                eventTimeS = eventTimeStartInput.getText().toString();
+                eventTimeE = eventTimeEndInput.getText().toString();
+                eventClub = eventClubInput.getText().toString();
+                eventDetails = eventDetailsInput.getText().toString();
+                if (eventName.isEmpty()) {
+                    eventNameInput.setHint(nameError);
+                    eventName = nameError;
+                }
+
+                if (eventDate.isEmpty()) {
+                    eventDateInput.setHint(dateError);
+                    eventDate = dateError;
+                }
+
+                if (eventTimeS.isEmpty()) {
+                    eventTimeStartInput.setHint(sTimeError);
+                    eventTimeS = sTimeError;
+                }
+
+                if (eventTimeE.isEmpty()) {
+                    eventTimeEndInput.setHint(eTimeError);
+                    eventTimeE = eTimeError;
+                }
+
+
+                if (!(eventName.equals(nameError) && eventDate.equals
+                        (dateError) && eventTimeS.equals(sTimeError) && eventTimeE.equals
+                        (eTimeError)))
+                    wantToCloseDialog = true;
+
+
+                if (wantToCloseDialog) {
+                    Map<String, String> firebaseEvent = new HashMap<String, String>();
+                    firebaseEvent.put("event_date", eventDate);
+                    firebaseEvent.put("event_name", eventName);
+                    firebaseEvent.put("event_time_start", eventTimeS);
+                    firebaseEvent.put("event_time_end", eventTimeE);
+                    firebaseEvent.put("event_club", eventClub);
+                    firebaseEvent.put("event_details", eventDetails);
+
+                    Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+                    ref.child("groups").child(group).child("events").push().setValue(firebaseEvent);
+
+                    prompt.dismiss();
+                }
+            }
+        });
     }
 
     @Override
