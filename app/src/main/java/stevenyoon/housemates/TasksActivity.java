@@ -111,7 +111,8 @@ public class TasksActivity extends AppCompatActivity
         String s = t.getText().toString();
 
         if(s.equalsIgnoreCase("")) {
-            Toast.makeText(this, "Empty task not added", Toast.LENGTH_SHORT);
+            Toast.makeText(this, "Empty task not added", Toast.LENGTH_SHORT).show();
+
         }
         else {
             Map<String, String> firebaseTask = new HashMap<String, String>();
@@ -168,10 +169,6 @@ public class TasksActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -189,6 +186,7 @@ public class TasksActivity extends AppCompatActivity
         }
         else if(id == R.id.nav_calendar) {
             Intent i = new Intent(TasksActivity.this, CalendarActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {

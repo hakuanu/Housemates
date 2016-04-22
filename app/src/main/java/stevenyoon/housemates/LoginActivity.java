@@ -29,11 +29,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.firebase.client.AuthData;
 import com.firebase.client.DataSnapshot;
@@ -73,6 +71,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private AccessTokenTracker mFacebookAccessTokenTracker;
+    private CallbackManager mFacebookCallbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,9 +114,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-        CallbackManager callbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        LoginButton mFacebookLoginButton = (LoginButton) findViewById(R.id.login_button);
+                /* Load the Facebook login button and set up the tracker to monitor access token changes */
+        mFacebookCallbackManager = CallbackManager.Factory.create();
+        mFacebookAccessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                //Log.i("Facebook.AccessTokenTracker.OnCurrentAccessTokenChanged");
+                onFacebookAccessTokenChange(currentAccessToken);
+            }
+        };
+
+       /* loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 onFacebookAccessTokenChange(loginResult.getAccessToken());
@@ -131,7 +140,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             public void onError(FacebookException exception) {
                 // App code
             }
-        });
+        });*/
     }
     private void onFacebookAccessTokenChange(AccessToken token) {
         Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
@@ -284,7 +293,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
-
+        if (mFacebookAccessTokenTracker != null) {
+            mFacebookAccessTokenTracker.stopTracking();
+        }
     }
     private void mainIntent(String groupName){
         Intent i = new Intent(this, MainActivity.class);
@@ -454,6 +465,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }
 
