@@ -306,16 +306,16 @@ public class CalendarActivity extends AppCompatActivity
             Intent i = new Intent(CalendarActivity.this, TasksActivity.class);
             i.putExtra("group", group);
             startActivity(i);
-        }
-        else if (id == R.id.nav_payment) {
-            Intent i = new Intent(CalendarActivity.this, SplitwiseActivity.class);
-            startActivity(i);
-        }
-        else if (id == R.id.nav_settings) {
-            Intent i = new Intent(CalendarActivity.this, SettingsActivity.class);
+        } else if (id == R.id.nav_payment) {
+            Intent i = new Intent(CalendarActivity.this, PaymentsActivity.class);
             i.putExtra("group", group);
             startActivity(i);
         }
+        /*else if (id == R.id.nav_settings) {
+            Intent i = new Intent(CalendarActivity.this, SettingsActivity.class);
+            i.putExtra("group", group);
+            startActivity(i);
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

@@ -18,10 +18,10 @@
             android:id="@+id/nav_payment"
             android:icon="@mipmap/ic_menu_payment"
             android:title="Payment" />
-        <item
+        <!--<item
             android:id="@+id/nav_settings"
             android:icon="@mipmap/ic_menu_settings"
-            android:title="User Settings" />
+            android:title="User Settings" />-->
     </group>
 
 </menu>

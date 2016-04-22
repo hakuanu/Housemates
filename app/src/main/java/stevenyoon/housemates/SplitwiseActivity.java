@@ -107,8 +107,8 @@ public class SplitwiseActivity extends AppCompatActivity {
 
     private static final String CONSUMER_KEY = "zxZolcntA2h9IO76sEUg818wmU92QQcduwpPrR4d";
     private static final String CONSUMER_SECRET = "YXJ8XpBVimRlDq90dLD5w7RpKXKZLqPxzGJl6Mr8";
-    private String ACCESS_TOKEN = "";
-    private String TOKEN_SECRET = "";
+    private String accessToken;
+    private String tokenSecret;
     private static final String REQUEST_TOKEN_ENDPOINT_URL = "https://secure.splitwise.com/api/v3.0/get_request_token";
     private static final String ACCESS_TOKEN_ENDPOINT_URL = "https://secure.splitwise.com/api/v3.0/get_access_token";
     private static final String AUTHORIZE_WEBSITE_URL = "https://secure.splitwise.com/authorize";
@@ -309,41 +309,5 @@ public class SplitwiseActivity extends AppCompatActivity {
 
         };
         oauth.start();
-    }
-
-
-    private class GetGroupsRequest extends AsyncTask<String, Void, Boolean> {
-
-        @Override
-        protected void onPreExecute(){
-        }
-
-        @Override
-        protected Boolean doInBackground(String... urls) {
-            HttpGet request = new HttpGet("https://secure.splitwise.com/api/v3.0/get_groups");
-            //consumer.sign(request);
-
-            System.out.println("Sending  request to Spltiwise...");
-
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpResponse response = null;
-            try {
-                response = httpClient.execute(request);
-
-                String msg = EntityUtils.toString(response.getEntity(), "UTF-8");
-                System.out.println("Response: " + response.getStatusLine().getStatusCode() + " "
-                        + response.getStatusLine().getReasonPhrase());
-                System.out.println(msg.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean status){
-            Log.v("Debugging", "worked!");
-        }
-
     }
 }

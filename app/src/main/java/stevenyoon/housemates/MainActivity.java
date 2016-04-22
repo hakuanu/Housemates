@@ -105,64 +105,6 @@ public class MainActivity extends AppCompatActivity
             public void onCancelled(FirebaseError firebaseError) {
             }
         });
-/*        Firebase eventRef = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-        eventRef = ref.child("groups").child(group).child("events");
-        eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    String eventDate = (String)child.child("event_date").getValue();
-                    String eventTimeS = (String)child.child("event_time_start").getValue();
-                    String eventTimeE = (String)child.child("event_time_end").getValue();
-                    String eventClub = (String)child.child("event_club").getValue();
-                    String eventName = (String)child.child("event_name").getValue();
-                    String eventDetails = (String)child.child("event_details").getValue();
-                    Event event = new Event(eventDate, eventTimeS, eventTimeE, eventName, eventClub, eventDetails, child.getKey());
-                    adaptEvents.add(event);
-                    adaptEvents.notifyDataSetChanged();
-                }
-            }
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-            }
-        });*/
-        /*eventRef.addChildEventListener(new ChildEventListener() {
-            // Retrieve new posts as they are added to the database
-            @Override
-            public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
-                String eventDate = (String)snapshot.child("event_date").getValue();
-                String eventTimeS = (String)snapshot.child("event_time_start").getValue();
-                String eventTimeE = (String)snapshot.child("event_time_end").getValue();
-                String eventClub = (String)snapshot.child("event_club").getValue();
-                String eventName = (String)snapshot.child("event_name").getValue();
-                String eventDetails = (String)snapshot.child("event_details").getValue();
-                Event event = new Event(eventDate, eventTimeS, eventTimeE, eventName, eventClub, eventDetails, snapshot.getKey());
-                adaptEvents.add(event);
-                adaptEvents.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot snapshot) {
-                System.out.println("The read failed: ");
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
-                System.out.println("The read failed: ");
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
-                System.out.println("The read failed: ");
-            }
-
-        });*/
     }
 
     @Override
@@ -211,13 +153,14 @@ public class MainActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_payment) {
             Intent i = new Intent(MainActivity.this, PaymentsActivity.class);
-            startActivity(i);
-        }
-        else if (id == R.id.nav_settings) {
-            Intent i = new Intent(MainActivity.this, SettingsActivity.class);
             i.putExtra("group", group);
             startActivity(i);
         }
+       /* else if (id == R.id.nav_settings) {
+            Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+            i.putExtra("group", group);
+            startActivity(i);
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

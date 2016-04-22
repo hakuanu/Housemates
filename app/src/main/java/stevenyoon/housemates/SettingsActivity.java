@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class SettingsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -31,6 +32,9 @@ public class SettingsActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        TextView groupname = (TextView) findViewById(R.id.groupName);
+        groupname.setText(group);
     }
 
     @Override
@@ -84,6 +88,7 @@ public class SettingsActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_payment) {
             Intent i = new Intent(SettingsActivity.this, SplitwiseActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
 
