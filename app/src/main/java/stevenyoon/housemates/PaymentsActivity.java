@@ -43,8 +43,8 @@ public class PaymentsActivity extends AppCompatActivity {
 
     private static final String CONSUMER_KEY = "zxZolcntA2h9IO76sEUg818wmU92QQcduwpPrR4d";
     private static final String CONSUMER_SECRET = "YXJ8XpBVimRlDq90dLD5w7RpKXKZLqPxzGJl6Mr8";
-    private String ACCESS_TOKEN = "";
-    private String TOKEN_SECRET = "";
+    private String accessToken;
+    private String tokenSecret;
     private static final String REQUEST_TOKEN_ENDPOINT_URL = "https://secure.splitwise.com/api/v3.0/get_request_token";
     private static final String ACCESS_TOKEN_ENDPOINT_URL = "https://secure.splitwise.com/api/v3.0/get_access_token";
     private static final String AUTHORIZATION_URL = "https://secure.splitwise.com/authorize";
@@ -231,6 +231,8 @@ public class PaymentsActivity extends AppCompatActivity {
                         i.putExtra("access_token", consumer.getToken());
                         i.putExtra("access_secret", consumer.getTokenSecret());
                         i.putExtra("group", group);
+                        accessToken = consumer.getToken();
+                        tokenSecret = consumer.getTokenSecret();
                         System.out.println("Passing Token " + consumer.getToken());
                         System.out.println("Passing Secret " + consumer.getTokenSecret());
                         startActivity(i);
