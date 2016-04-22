@@ -189,7 +189,12 @@ public class TasksActivity extends AppCompatActivity
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
+<<<<<<< HEAD
             Intent i = new Intent(TasksActivity.this, PaymentsActivity.class);
+=======
+            Intent i = new Intent(TasksActivity.this, SplitwiseActivity.class);
+            i.putExtra("group", group);
+>>>>>>> b1b6f165f8e8d0ef15fc3fde133863e2e0a5b070
             startActivity(i);
         }
         else if (id == R.id.nav_settings) {

@@ -447,7 +447,7 @@ public class PaymentsActionsActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+    /*
         //noinspection SimplifiableIfStatement
         /*if (id == R.id.action_settings) {
             return true;
@@ -469,8 +469,15 @@ public class PaymentsActionsActivity extends AppCompatActivity
         }
         else if(id == R.id.nav_calendar) {
             Intent i = new Intent(PaymentsActionsActivity.this, CalendarActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
+        else if(id == R.id.nav_tasks) {
+            Intent i = new Intent(PaymentsActionsActivity.this, TasksActivity.class);
+            i.putExtra("group", group);
+            startActivity(i);
+        }
+
         else if (id == R.id.nav_payment) {
             Intent i = new Intent(PaymentsActionsActivity.this, PaymentsActivity.class);
             startActivity(i);
