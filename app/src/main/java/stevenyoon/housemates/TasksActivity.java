@@ -189,6 +189,7 @@ public class TasksActivity extends AppCompatActivity
         }
         else if(id == R.id.nav_calendar) {
             Intent i = new Intent(TasksActivity.this, CalendarActivity.class);
+            i.putExtra("group", group);
             startActivity(i);
         }
         else if (id == R.id.nav_payment) {
