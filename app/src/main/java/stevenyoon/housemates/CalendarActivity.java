@@ -176,9 +176,11 @@ public class CalendarActivity extends AppCompatActivity
         eventDateInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(textEventEntry.getContext(), date, myCalendar
+               DatePickerDialog dpg = new DatePickerDialog(textEventEntry.getContext(), date,
+                        myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                        myCalendar.get(Calendar.DAY_OF_MONTH));
+                dpg.show();
             }
         });
 
@@ -198,9 +200,11 @@ public class CalendarActivity extends AppCompatActivity
         eventTimeStartInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TimePickerDialog(textEventEntry.getContext(), timeStart, myCalendar
+               TimePickerDialog tpg = new TimePickerDialog(textEventEntry.getContext(), timeStart,
+                        myCalendar
                         .get(Calendar.HOUR_OF_DAY), myCalendar.get(Calendar.MINUTE),
-                        false).show();
+                        false);
+                tpg.show();
             }
         });
 
@@ -220,9 +224,11 @@ public class CalendarActivity extends AppCompatActivity
         eventTimeEndInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TimePickerDialog(textEventEntry.getContext(), timeEnd, myCalendar
+               TimePickerDialog tpg = new TimePickerDialog(textEventEntry.getContext(), timeEnd,
+                        myCalendar
                         .get(Calendar.HOUR_OF_DAY), myCalendar.get(Calendar.MINUTE),
-                        false).show();
+                        false);
+                tpg.show();
             }
         });
 
