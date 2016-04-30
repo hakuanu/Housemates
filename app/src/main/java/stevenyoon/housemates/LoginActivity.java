@@ -17,6 +17,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -162,7 +163,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
     public void registerButtonClicked(){
-        Intent i = new Intent(this, CreateAccountActivity.class);
+        Intent i = new Intent(this, AccountCreation.class);
         //i.putExtra()
         startActivity(i);
     }
@@ -226,8 +227,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        Editable ev = mEmailView.getText();
+        Editable pv = mPasswordView.getText();
+        String email = ev.toString();
+        String password = pv.toString();
 
         boolean cancel = false;
         View focusView = null;
