@@ -165,7 +165,7 @@ public class GroupLoginActivity extends AppCompatActivity {
                     if (snapshot.child("groups").hasChild(group)) {
                         if (snapshot.child("groups").child(group).child("password").getValue().equals(password)) {
                             ref.child("users").child(uid).child("group").setValue(group);
-                            loginSuccess(group);
+                            onLoginSuccess(group);
                         } else {
                             showProgress(false);
                             mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -183,7 +183,7 @@ public class GroupLoginActivity extends AppCompatActivity {
             });
         }
     }
-    private void loginSuccess(String groupName){
+    private void onLoginSuccess(String groupName){
         Intent i = new Intent(this, MainActivity.class);
         i.putExtra("group", groupName);
         startActivity(i);

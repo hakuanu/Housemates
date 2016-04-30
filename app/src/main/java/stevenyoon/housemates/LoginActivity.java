@@ -150,7 +150,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 @Override
                 public void onAuthenticated(AuthData authData) {
                     // The Facebook user is now authenticated with your Firebase app
-                    loginSuccess(authData.getUid());
+                    onLoginSuccess(authData.getUid());
                 }
                 @Override
                 public void onAuthenticationError(FirebaseError firebaseError) {
@@ -261,7 +261,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 @Override
                 public void onAuthenticated(AuthData authData) {
 
-                    loginSuccess(authData.getUid());
+                    onLoginSuccess(authData.getUid());
                 }
                 @Override
                 public void onAuthenticationError(FirebaseError firebaseError) {
@@ -277,7 +277,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             });
         }
     }
-    private void loginSuccess(String uid){
+    private void onLoginSuccess(String uid){
         final String uid2 = uid;
         if (mFacebookAccessTokenTracker != null) {
             mFacebookAccessTokenTracker.stopTracking();
@@ -434,14 +434,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
             }
 
             // TODO: register the new account here.
