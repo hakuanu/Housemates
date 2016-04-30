@@ -465,7 +465,7 @@ public class PaymentsActionsActivity extends AppCompatActivity
         }
 
         else if (id == R.id.nav_payment) {
-            Intent i = new Intent(PaymentsActionsActivity.this, SplitwiseActivity.class);
+            Intent i = new Intent(PaymentsActionsActivity.this, PaymentsActivity.class);
             i.putExtra("group", group);
             startActivity(i);
         }
