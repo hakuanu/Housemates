@@ -17,6 +17,10 @@ public class SettingsActivity extends AppCompatActivity
     private String group;
 
     @Override
+    /*
+    * onCreate method loads the toolbar, drawerlayout, sets the content view with the proper
+    * layout, and sets the navigation view as well as displays the group's name
+    * */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
@@ -37,6 +41,9 @@ public class SettingsActivity extends AppCompatActivity
         groupname.setText(group);
     }
 
+    /*
+        Closes the drawer if its open or returns to the previous activity
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -47,26 +54,33 @@ public class SettingsActivity extends AppCompatActivity
         }
     }
 
+    /*
+     Inflate the menu; this adds items to the action bar if it is present.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
+    /*
+      Handles action bar item clicks
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
+        // The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-
         return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
+    /*
+        Handles navigation view item clicks, provides the option to navigate to the main,
+        calendar, tasks, and splitwise activites.
+     */
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
