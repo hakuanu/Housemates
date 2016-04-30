@@ -155,7 +155,7 @@ public class GroupCreation extends AppCompatActivity{
                     } else {
                         ref.child("users").child(uid).child("group").setValue(group);
                         ref.child("groups").child(group).child("password").setValue(password);
-                        loginSuccess(group);
+                        onLoginSuccess(group);
                     }
                 }
 
@@ -175,7 +175,7 @@ public class GroupCreation extends AppCompatActivity{
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
-    private void loginSuccess(String groupName){
+    private void onLoginSuccess(String groupName){
         Intent i = new Intent(this, MainActivity.class);
         i.putExtra("group", groupName);
         startActivity(i);
