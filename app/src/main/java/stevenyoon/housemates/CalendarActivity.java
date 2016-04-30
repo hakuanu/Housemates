@@ -176,9 +176,11 @@ public class CalendarActivity extends AppCompatActivity
         eventDateInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(textEventEntry.getContext(), date, myCalendar
+               DatePickerDialog dpg = new DatePickerDialog(textEventEntry.getContext(), date,
+                        myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                        myCalendar.get(Calendar.DAY_OF_MONTH));
+                dpg.show();
             }
         });
 
@@ -198,9 +200,11 @@ public class CalendarActivity extends AppCompatActivity
         eventTimeStartInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TimePickerDialog(textEventEntry.getContext(), timeStart, myCalendar
+               TimePickerDialog tpg = new TimePickerDialog(textEventEntry.getContext(), timeStart,
+                        myCalendar
                         .get(Calendar.HOUR_OF_DAY), myCalendar.get(Calendar.MINUTE),
-                        false).show();
+                        false);
+                tpg.show();
             }
         });
 
@@ -220,9 +224,11 @@ public class CalendarActivity extends AppCompatActivity
         eventTimeEndInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TimePickerDialog(textEventEntry.getContext(), timeEnd, myCalendar
+               TimePickerDialog tpg = new TimePickerDialog(textEventEntry.getContext(), timeEnd,
+                        myCalendar
                         .get(Calendar.HOUR_OF_DAY), myCalendar.get(Calendar.MINUTE),
-                        false).show();
+                        false);
+                tpg.show();
             }
         });
 
@@ -230,28 +236,14 @@ public class CalendarActivity extends AppCompatActivity
         eventPrompt.setTitle("Enter New Event");
 
         eventPrompt.setView(textEventEntry);
-
         eventPrompt.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                eventName = eventNameInput.getText().toString();
-                eventDate = eventDateInput.getText().toString();
-                eventTimeS = eventTimeStartInput.getText().toString();
-                eventTimeE = eventTimeEndInput.getText().toString();
-                eventClub = eventClubInput.getText().toString();
-                eventDetails = eventDetailsInput.getText().toString();
-                Map<String, String> firebaseEvent = new HashMap<String, String>();
-                firebaseEvent.put("event_date", eventDate);
-                firebaseEvent.put("event_name", eventName);
-                firebaseEvent.put("event_time_start", eventTimeS);
-                firebaseEvent.put("event_time_end", eventTimeE);
-                firebaseEvent.put("event_club", eventClub);
-                firebaseEvent.put("event_details", eventDetails);
 
-                Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
-                ref.child("groups").child(group).child("events").push().setValue(firebaseEvent);
 
             }
         });
+
+
 
         eventPrompt.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -259,8 +251,68 @@ public class CalendarActivity extends AppCompatActivity
             }
         });
 
-        AlertDialog prompt = eventPrompt.create();
+        final AlertDialog prompt = eventPrompt.create();
+        prompt.setCanceledOnTouchOutside(false);
+        prompt.setCancelable(false);
         prompt.show();
+        prompt.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Boolean wantToCloseDialog = false;
+                String nameError = "Please enter an event name";
+                String dateError = "Please enter a date";
+                String sTimeError = "Please enter a start time";
+                String eTimeError = "Please enter an end time";
+
+                eventName = eventNameInput.getText().toString();
+                eventDate = eventDateInput.getText().toString();
+                eventTimeS = eventTimeStartInput.getText().toString();
+                eventTimeE = eventTimeEndInput.getText().toString();
+                eventClub = eventClubInput.getText().toString();
+                eventDetails = eventDetailsInput.getText().toString();
+                if (eventName.isEmpty()) {
+                    eventNameInput.setHint(nameError);
+                    eventName = nameError;
+                }
+
+                if (eventDate.isEmpty()) {
+                    eventDateInput.setHint(dateError);
+                    eventDate = dateError;
+                }
+
+                if (eventTimeS.isEmpty()) {
+                    eventTimeStartInput.setHint(sTimeError);
+                    eventTimeS = sTimeError;
+                }
+
+                if (eventTimeE.isEmpty()) {
+                    eventTimeEndInput.setHint(eTimeError);
+                    eventTimeE = eTimeError;
+                }
+
+
+                if (!(eventName.equals(nameError) && eventDate.equals
+                        (dateError) && eventTimeS.equals(sTimeError) && eventTimeE.equals
+                        (eTimeError)))
+                    wantToCloseDialog = true;
+
+
+                if (wantToCloseDialog) {
+                    Map<String, String> firebaseEvent = new HashMap<String, String>();
+                    firebaseEvent.put("event_date", eventDate);
+                    firebaseEvent.put("event_name", eventName);
+                    firebaseEvent.put("event_time_start", eventTimeS);
+                    firebaseEvent.put("event_time_end", eventTimeE);
+                    firebaseEvent.put("event_club", eventClub);
+                    firebaseEvent.put("event_details", eventDetails);
+
+                    Firebase ref = new Firebase("https://dazzling-torch-3636.firebaseio.com");
+                    ref.child("groups").child(group).child("events").push().setValue(firebaseEvent);
+
+                    prompt.dismiss();
+                }
+            }
+        });
     }
 
     @Override
@@ -311,11 +363,11 @@ public class CalendarActivity extends AppCompatActivity
             i.putExtra("group", group);
             startActivity(i);
         }
-        else if (id == R.id.nav_settings) {
+        /*else if (id == R.id.nav_settings) {
             Intent i = new Intent(CalendarActivity.this, SettingsActivity.class);
             i.putExtra("group", group);
             startActivity(i);
-        }
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

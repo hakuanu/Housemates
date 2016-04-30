@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * A login screen that offers login via email/password.
  */
-public class CreateAccountActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class AccountCreation extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -62,7 +62,7 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
         // Set up the login form.
         Firebase.setAndroidContext(this);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-       // populateAutoComplete();
+        // populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordConfirmView = (EditText) findViewById(R.id.password_confirm);
@@ -164,20 +164,22 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
                     ref.authWithPassword(email, password, new Firebase.AuthResultHandler() {
                         @Override
                         public void onAuthenticated(AuthData authData) {
-                            loginSuccess(authData.getUid());
+                            onLoginSuccess(authData.getUid());
                         }
+
                         @Override
                         public void onAuthenticationError(FirebaseError firebaseError) {
                             // there was an error
                         }
                     });
                 }
+
                 @Override
                 public void onError(FirebaseError firebaseError) {
-                    if(firebaseError.getCode() == FirebaseError.EMAIL_TAKEN) {
+                    if (firebaseError.getCode() == FirebaseError.EMAIL_TAKEN) {
                         mEmailView.setError(getString(R.string.error_email_taken));
-                      //  focusView = mEmailView;
-                    } else{
+                        //  focusView = mEmailView;
+                    } else {
                         System.out.println(firebaseError.getMessage());
                     }
 
@@ -198,11 +200,13 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
-    private void loginSuccess(String uid){
+
+    private void onLoginSuccess(String uid) {
         Intent i = new Intent(this, GroupLoginActivity.class);
         i.putExtra("UID", uid);
         startActivity(i);
     }
+
     /**
      * Shows the progress UI and hides the login form.
      */
@@ -276,7 +280,7 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(CreateAccountActivity.this,
+                new ArrayAdapter<>(AccountCreation.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
@@ -329,7 +333,7 @@ public class CreateAccountActivity extends AppCompatActivity implements LoaderCa
             showProgress(false);
 
             if (success) {
-               // finish();
+                // finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

@@ -2,7 +2,12 @@ package stevenyoon.housemates;
 /**
  * Created by Mikael on 3/18/16.
  */
-
+/*
+* Event class to store an event's date, start time, end time, event name, club name, details, and
+ * id.
+ * Outside of the constructor method it has methods for getting and updating the variables listed
+  * above.
+* */
 public class Event {
     private String date;
     private String startT;
@@ -23,7 +28,10 @@ public class Event {
         this.id = id;
 
     }
-
+    /*
+    * Methods for getting and updating member variables
+    *
+    *  */
     public String getEventName() { return eventName;}
     public String getdate() { return date;}
     public String getStartTime() {return startT;}
