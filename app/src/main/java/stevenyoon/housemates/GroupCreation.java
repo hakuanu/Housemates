@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,8 +21,6 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-
-import java.util.List;
 
 /**
  * A login screen that offers login via group/password.
@@ -61,16 +58,7 @@ public class GroupCreation extends AppCompatActivity{
         System.out.println(uid);
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordConfirmView = (EditText) findViewById(R.id.password_confirm);
-      /*  mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });*/
+
 
         Button mGroupSignInButton = (Button) findViewById(R.id.group_register_button);
         mGroupSignInButton.setOnClickListener(new OnClickListener() {
@@ -218,18 +206,6 @@ public class GroupCreation extends AppCompatActivity{
 
 
 
-
-    private void addGroupsToAutoComplete(List<String> groupAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(GroupCreation.this,
-                        android.R.layout.simple_dropdown_item_1line, groupAddressCollection);
-
-        mGroupView.setAdapter(adapter);
-    }
-
-
-
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -246,7 +222,6 @@ public class GroupCreation extends AppCompatActivity{
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
 
             try {
                 // Simulate network access.
@@ -254,9 +229,6 @@ public class GroupCreation extends AppCompatActivity{
             } catch (InterruptedException e) {
                 return false;
             }
-
-
-            // TODO: register the new account here.
             return true;
         }
 
